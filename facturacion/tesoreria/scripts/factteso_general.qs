@@ -156,16 +156,35 @@ function oficial_bufferChanged(fN:String)
 
 function oficial_tbnCalcularDatosCuenta_clicked()
 {
-    var util:FLUtil;
     var _i = this.iface;
     
-    var res = MessageBox.information(sys.translate("Se van a calcular los dí­gitos de control, los códigos de cuenta, y el IBAN de todas las cuentas de empresa, clientes, y proveedores.\n¿Quieres continuar?\n\nNota: si el código de paí­s en la cuenta está vacÃ­o, se supondrá que es de España.\nSi tiene cuentas de otros paí­ses debe revisarlas antes e informar su correspondiente código de país"), MessageBox.Yes, MessageBox.No);
+    var res = MessageBox.information(sys.translate("Se van a calcular los dígitos de control, los códigos de cuenta, y el IBAN de todas las cuentas de empresa, clientes, y proveedores.\n¿Quieres continuar?\n\nNota: si el código de país en la cuenta está vacío, se supondrá que es de España.\nSi tiene cuentas de otros países debe revisarlas antes e informar su correspondiente código de país"), MessageBox.Yes, MessageBox.No);
     if (res != MessageBox.Yes) {
         return;
     }
     
+    var codigoES = AQUtil.sqlSelect("paises","codpais","codpais = 'ES' AND codiso = 'ES'");
+    var paisES;
+        
+    if(!codigoES || codigoES == "") {
+        paisES = AQUtil.sqlSelect("paises","codpais","codiso = 'ES' ORDER BY codpais");
+        
+        if(!paisES || paisES == "") {
+            MessageBox.information(sys.translate("Lo siento, necesita tener un país con código ISO 'ES'."), MessageBox.Ok, MessageBox.NoButton);
+            return false;
+        }
+    }
+    else {
+        paisES = codigoES;
+    }
+    
     var aTablas = ["cuentasbanco","cuentasbcocli","cuentasbcopro"];
+    var aTablasError = ["Cta. Empresa", "Cta. Cliente", "Cta. Proveedor"];
     var nombresTabla = [sys.translate("cuentas de empresa"), sys.translate("cuentas de clientes"), sys.translate("cuentas de proveedores")];
+    
+    var aErrorCta = [];
+    var aErrorDesc = [];
+    var aErrorTab = [];
     
     for(var i = 0; i < aTablas.length; i++) {
         var paso = 0;
@@ -179,21 +198,20 @@ function oficial_tbnCalcularDatosCuenta_clicked()
             continue;
         }
         
-        //AQUtil.createProgressDialog(sys.translate("Calculando datos de IBAN en las %1...").arg(nombresTabla[i]), totalPasos);
-        util.createProgressDialog(util.translate("scripts", "Calculando datos de IBAN en las %1...").arg(nombresTabla[i]), totalPasos);
-        util.setProgress(0);
+        AQUtil.createProgressDialog(sys.translate("Calculando datos de IBAN en las %1...").arg(nombresTabla[i]), totalPasos);
         
         while(curCuentas.next()) {
-            //AQUtil.setProgress(++paso);
-            util.setProgress(++paso);
+            AQUtil.setProgress(++paso);
             curCuentas.setModeAccess(curCuentas.Edit);
             curCuentas.refreshBuffer();
             
             var codCuenta = curCuentas.valueBuffer("codcuenta");
+            var desc = curCuentas.valueBuffer("descripcion");
+            var codPais = curCuentas.valueBuffer("codpais");
         
-            if (curCuentas.isNull("codpais") || AQUtil.sqlSelect("paises", "codiso", "codpais = '" + curCuentas.valueBuffer("codpais") + "'") == "ES") {
-                if (curCuentas.isNull("codpais")) {
-                    curCuentas.setValueBuffer("codpais", AQUtil.sqlSelect("paises", "codpais", "codiso = 'ES'"));
+            if (curCuentas.isNull("codpais") || (codPais == "ES" && paisES && paisES != "") || AQUtil.sqlSelect("paises", "codiso", "codpais = '" + curCuentas.valueBuffer("codpais") + "'") == "ES") {
+                if (curCuentas.isNull("codpais") || (codPais == "ES" && paisES && paisES != "")) {
+                    curCuentas.setValueBuffer("codpais", paisES);
                 }
                 
                 var entidad = curCuentas.valueBuffer("ctaentidad");
@@ -201,14 +219,23 @@ function oficial_tbnCalcularDatosCuenta_clicked()
                 var cuenta = curCuentas.valueBuffer("cuenta");
                 
                 if(!entidad || !agencia || !cuenta) {
+                    aErrorCta.push(codCuenta);
+                    aErrorDesc.push(desc);
+                    aErrorTab.push(aTablasError[i]);
                     continue;
                 }
                 
                 if(entidad.length != 4 || agencia.length != 4 || cuenta.length != 10) {
+                    aErrorCta.push(codCuenta);
+                    aErrorDesc.push(desc);
+                    aErrorTab.push(aTablasError[i]);
                     continue;
                 }
                 
                 if(isNaN(parseFloat(entidad)) || isNaN(parseFloat(entidad)) || isNaN(parseFloat(entidad))) {
+                    aErrorCta.push(codCuenta);
+                    aErrorDesc.push(desc);
+                    aErrorTab.push(aTablasError[i]);
                     continue;
                 }
                 
@@ -219,18 +246,54 @@ function oficial_tbnCalcularDatosCuenta_clicked()
             
             
             if (!curCuentas.commitBuffer()) {
-                //AQUtil.destroyProgressDialog();
-                util.destroyProgressDialog();
-                MessageBox.warning(util.translate("scripts", "Error en el cálculo de los datos de la cuenta %1 en %2").arg(codCuenta).arg(nombresTabla[i]), MessageBox.Ok, MessageBox.NoButton);
+                AQUtil.destroyProgressDialog();
+                MessageBox.information(sys.translate("Error en el cálculo de los datos de la cuenta %1 en %2"), MessageBox.Ok, MessageBox.NoButton);
                 return;
             }           
         } 
         
-        //AQUtil.destroyProgressDialog();
-        util.destroyProgressDialog();
+        AQUtil.destroyProgressDialog();
     }
     
-    MessageBox.information(sys.translate("Los datos de las cuentas han sido recalculados con éxito."), MessageBox.Ok, MessageBox.NoButton);
+    if(aErrorCta.length == 0) {
+        MessageBox.information(sys.translate("Los datos de las cuentas han sido recalculados con éxito."), MessageBox.Ok, MessageBox.NoButton);
+    }
+    else if(aErrorCta.length < 20) {
+        var mensaje = "Las siguientes cuentas no han sido recalculadas:\n";
+        
+        for(var i = 0; i < aErrorCta.length; i++) {
+            mensaje += "\n     " + aErrorTab[i] + " - " + aErrorCta[i] + " - " + aErrorDesc[i] + ".";
+        }
+        
+        MessageBox.information(sys.translate(mensaje), MessageBox.Ok, MessageBox.NoButton);
+    }
+    else {
+        MessageBox.information(sys.translate("Algunas cuentas no se han podido calcular.\nIntroduzca una ruta para guardar un archivo que las contenga:"), MessageBox.Ok, MessageBox.NoButton);
+        
+        var archivo = FileDialog.getSaveFileName("*.txt");
+        
+        if(!archivo || archivo == "") {
+            return false;
+        }
+        
+        if(!archivo.endsWith(".txt")) {
+            archivo += ".txt";
+        }
+        
+        var file = new File(archivo);
+        file.open(File.WriteOnly);
+        
+        var mensaje = "Las siguientes cuentas no han sido recalculadas:\n";
+        
+        for(var i = 0; i < aErrorCta.length; i++) {
+            mensaje += "\n     " + aErrorTab[i] + " - " + aErrorCta[i] + " - " + aErrorDesc[i] + ".";
+        }
+        
+        file.write(mensaje);
+        file.close();
+        
+        MessageBox.information(sys.translate("El fichero se ha generado con éxito en %1"), MessageBox.Ok, MessageBox.NoButton);
+    }
 }
 //// OFICIAL /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////

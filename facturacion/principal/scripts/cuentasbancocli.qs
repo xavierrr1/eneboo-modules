@@ -92,15 +92,12 @@ function interna_init()
 	
 	connect(cursor, "bufferChanged(QString)", _i, "bufferChanged");
 	
-	cursor.setValueBuffer("codcliente", cursor.cursorRelation().valueBuffer("codcliente"));
-	
 	formRecordcuentasbanco.iface.pub_habilitarPorPais(this);
 }
 
 function interna_calculateCounter()
 {
-    var util:FLUtil = new FLUtil();
-	return util.nextCounter("codcuenta", this.cursor());
+	return AQUtil.nextCounter("codcuenta", this.cursor());
 }
 
 //// INTERNA /////////////////////////////////////////////////////

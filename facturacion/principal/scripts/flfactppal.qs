@@ -173,15 +173,70 @@ class oficial extends interna {
     function moduloNumero(num, div) {
         return this.ctx.oficial_moduloNumero(num, div);
     }
+    function calcularIdentificadorAcreedor(cifEmpresa, codCuenta) {
+        return this.ctx.oficial_calcularIdentificadorAcreedor(cifEmpresa, codCuenta);
+    }
 }
 //// OFICIAL /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+/** @class_declaration envioMail */
+/////////////////////////////////////////////////////////////////
+//// ENVIO MAIL /////////////////////////////////////////////////
+class envioMail extends oficial /** %from: oficial */ {
+	function envioMail( context ) { oficial ( context ); }
+	function enviarCorreo(cuerpo:String, asunto:String, arrayDest:Array, arrayAttach:Array) {
+		return this.ctx.envioMail_enviarCorreo(cuerpo, asunto, arrayDest, arrayAttach);
+	}
+	function componerCorreo(cuerpo:String, asunto:String, arrayDest:Array, arrayAttach:Array):String {
+		return this.ctx.envioMail_componerCorreo(cuerpo, asunto, arrayDest, arrayAttach);
+	}
+	function componerListaDestinatarios(codigo:String, tabla:String):String {
+		return this.ctx.envioMail_componerListaDestinatarios(codigo, tabla);
+	}
+	function existeEnvioMail():Boolean {
+		return this.ctx.envioMail_existeEnvioMail();
+	}
+}
+//// ENVIO MAIL /////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+
+/** @class_declaration dtoEsp */
+/////////////////////////////////////////////////////////////////
+//// DESCUENTO ESPECIAL /////////////////////////////////////////
+class dtoEsp extends envioMail /** %from: oficial */ {
+	function dtoEsp( context ) { envioMail ( context ); }
+	function calcularLiquidacionAgente(codLiquidacion:String):Number {
+		return this.ctx.dtoEsp_calcularLiquidacionAgente(codLiquidacion);
+	}
+}
+//// DESCUENTO ESPECIAL /////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+
+/** @class_declaration pubEnvioMail */
+/////////////////////////////////////////////////////////////////
+//// PUB ENVIO MAIL /////////////////////////////////////////////
+class pubEnvioMail extends dtoEsp /** %from: envioMail */ {
+	function pubEnvioMail( context ) { dtoEsp ( context ); }
+	function pub_enviarCorreo(cuerpo:String, asunto:String, arrayDest:Array, arrayAttach:Array) {
+		return this.enviarCorreo(cuerpo, asunto, arrayDest, arrayAttach);
+	}
+	function pub_componerListaDestinatarios(codigo:String, tabla:String):String {
+		return this.componerListaDestinatarios(codigo, tabla);
+	}
+	function pub_existeEnvioMail():Boolean {
+		return this.existeEnvioMail();
+	}
+}
+
+//// PUB ENVIO MAIL /////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+
 /** @class_declaration head */
 /////////////////////////////////////////////////////////////////
 //// DESARROLLO /////////////////////////////////////////////////
-class head extends oficial {
-	function head( context ) { oficial ( context ); }
+class head extends pubEnvioMail {
+	function head( context ) { pubEnvioMail ( context ); }
 }
 //// DESARROLLO /////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
@@ -342,7 +397,7 @@ function interna_init()
 
 	if (util.sqlSelect("empresa", "id", "1 = 1"))
 		return;
-	
+
 	var cursor:FLSqlCursor = new FLSqlCursor("empresa");
 	cursor.select();
 	if (!cursor.first()) {
@@ -404,7 +459,7 @@ function interna_afterCommit_clientes(curCliente:FLSqlCursor):Boolean
 	var idSubcuenta:Number = parseFloat(curCliente.valueBuffer("idsubcuenta"));
 	var codCliente:String = curCliente.valueBuffer("codcliente");
 	var idSubcuentaPrevia:Number = parseFloat(curCliente.valueBufferCopy("idsubcuenta"));
-	
+
 	switch(curCliente.modeAccess()) {
 	/** \C Cuando el cliente se crea, se generan automáticamente las subcuentas para dicho cliente asociadas a los ejercicios con plan general contable creado.
 	\end */
@@ -483,9 +538,9 @@ function interna_beforeCommit_proveedores(curProveedor:FLSqlCursor):Boolean
 
 			var idSubcuenta:String;
 			while (qrySubcuentas.next()) {
-				idSubcuenta = qrySubcuentas.value("s.idsubcuenta"); 
+				idSubcuenta = qrySubcuentas.value("s.idsubcuenta");
 				if (parseFloat(qrySubcuentas.value("s.saldo")) != 0)
-					continue; 
+					continue;
 				if (util.sqlSelect("co_partidas", "idpartida", "idsubcuenta = " + idSubcuenta))
 					continue;
 				if (util.sqlSelect("co_subcuentasprov", "idsubcuenta", "idsubcuenta = " + idSubcuenta + " AND codproveedor <> '" + curProveedor.valueBuffer("codproveedor") + "'"))
@@ -516,12 +571,12 @@ function interna_beforeCommit_clientes(curCliente:FLSqlCursor):Boolean
 			try { qrySubcuentas.setForwardOnly( true ); } catch (e) {}
 			if (!qrySubcuentas.exec())
 				return false;
-			
+
 			var idSubcuenta:String;
 			while (qrySubcuentas.next()) {
-				idSubcuenta = qrySubcuentas.value("s.idsubcuenta"); 
+				idSubcuenta = qrySubcuentas.value("s.idsubcuenta");
 				if (parseFloat(qrySubcuentas.value("s.saldo")) != 0)
-					continue; 
+					continue;
 				if (util.sqlSelect("co_partidas", "idpartida", "idsubcuenta = " + idSubcuenta))
 					continue;
 				if (util.sqlSelect("co_subcuentascli", "idsubcuenta", "idsubcuenta = " + idSubcuenta + " AND codcliente <> '" + curCliente.valueBuffer("codcliente") + "'"))
@@ -560,7 +615,7 @@ function interna_beforeCommit_cuentasbcocli(curCuenta:FLSqlCursor):Boolean
 	/** \C No se permite borrar la cuenta de un cliente si tiene recibos pendientes de pago asociados a dicha cuenta
 	\end */
 	switch(curCuenta.modeAccess()) {
-	
+
 		case curCuenta.Del:
 			var util:FLUtil = new FLUtil;
 			var codRecibo:String = util.sqlSelect("reciboscli", "codigo", "codcliente = '" + curCuenta.valueBuffer("codcliente") + "' AND codcuenta = '" + curCuenta.valueBuffer("codcuenta") + "' AND estado <> 'Pagado'");
@@ -647,7 +702,7 @@ function oficial_valorDefectoEmpresa(fN:String):String
 function oficial_ejercicioActual():String
 {
 	var util:FLUtil = new FLUtil;
-	var codEjercicio:String 
+	var codEjercicio:String
 	try {
 		var settingKey:String = "ejerUsr_" + sys.nameUser();
 		codEjercicio = util.readDBSettingEntry(settingKey);
@@ -655,10 +710,10 @@ function oficial_ejercicioActual():String
 			codEjercicio = this.iface.cambiarEjercicioActual(this.iface.valorDefectoEmpresa("codejercicio"));*/
 	}
 	catch ( e ) {}
-	
+
 	if (!codEjercicio)
 		codEjercicio = this.iface.valorDefectoEmpresa("codejercicio");
-	
+
 	return codEjercicio;
 }
 
@@ -675,13 +730,13 @@ function oficial_cambiarEjercicioActual(codEjercicio:String):Boolean
 {
 	var util:FLUtil = new FLUtil();
 	var ok:Boolean = false;
-	
+
 	try {
 		var settingKey:String = "ejerUsr_" + sys.nameUser();
 		ok = util.writeDBSettingEntry(settingKey, codEjercicio);
 	}
 	catch (e) {}
-	
+
 	return ok;
 }
 
@@ -931,7 +986,7 @@ function oficial_valoresIniciales()
 		commitBuffer();
 	}
 	delete cursor;
-	
+
 	cursor = new FLSqlCursor("empresa");
         cursor.setActivatedCheckIntegrity(false);
 	var milogo:String = "";
@@ -1043,7 +1098,7 @@ function oficial_crearSubcuenta(codSubcuenta:String, descripcion:String, idCuent
 		datosEmpresa["codejercicio"] = codEjercicio;
 	}
 	datosEmpresa["coddivisa"] = this.iface.valorDefectoEmpresa("coddivisa");
-	
+
 	var idSubcuenta:String = util.sqlSelect("co_subcuentas", "idsubcuenta","codsubcuenta = '" + codSubcuenta + "' AND codejercicio = '" + datosEmpresa.codejercicio + "'");
 	if (idSubcuenta) {
 		return idSubcuenta;
@@ -1052,7 +1107,7 @@ function oficial_crearSubcuenta(codSubcuenta:String, descripcion:String, idCuent
 	var codCuenta4:String = codSubcuenta.left(4);
 	var datosCuenta:Array = this.iface.ejecutarQry("co_cuentas", "codcuenta,idcuenta",
 		"idcuentaesp = '" + idCuentaEsp + "'" +
-		" AND codcuenta = '" + codCuenta4 + "'" + 
+		" AND codcuenta = '" + codCuenta4 + "'" +
 		" AND codejercicio = '" + datosEmpresa.codejercicio + "' ORDER BY codcuenta");
 
 	if (datosCuenta.result == -1) {
@@ -1187,7 +1242,7 @@ function oficial_datosCtaProveedor(codProveedor:String, valoresDefecto:Array):Ar
 @param	codIntervalo: código del intervalo.
 @return	 intervalo: array con las fechas inicial y final del intervalo
 \end */
-function oficial_calcularIntervalo(codIntervalo:String):Array 
+function oficial_calcularIntervalo(codIntervalo:String):Array
 {
 	var util:FLUtil = new FLUtil();
 	var intervalo:Array = [];
@@ -1219,7 +1274,7 @@ function oficial_calcularIntervalo(codIntervalo:String):Array
 			intervalo.hasta = util.addDays(fechaHasta,-1);
 			break;
 		}
-		
+
 		case "000003": {
 			var dias:Number = fechaDesde.getDay() -1;
 			dias = dias * -1;
@@ -1227,7 +1282,7 @@ function oficial_calcularIntervalo(codIntervalo:String):Array
 			intervalo.hasta = util.addDays(intervalo.desde,6);
 			break;
 		}
-		
+
 		case "000004": {
 			var dias:Number = fechaHasta.getDay() -1;
 			dias = dias * -1;
@@ -1235,7 +1290,7 @@ function oficial_calcularIntervalo(codIntervalo:String):Array
 			intervalo.desde = util.addDays(intervalo.hasta,-6);
 			break;
 		}
-			
+
 		case "000005": {
 			mes = fechaDesde.getMonth();
 			fechaDesde.setDate(1);
@@ -1246,7 +1301,7 @@ function oficial_calcularIntervalo(codIntervalo:String):Array
 			intervalo.hasta = fechaHasta;
 			break;
 		}
-		
+
 		case "000006": {
 			fechaDesde.setDate(1);
 			fechaDesde = util.addMonths(fechaDesde, -1);
@@ -1256,7 +1311,7 @@ function oficial_calcularIntervalo(codIntervalo:String):Array
 			intervalo.hasta = fechaHasta;
 			break;
 		}
-		
+
 		case "000007": {
 			fechaDesde.setDate(1);
 			fechaDesde.setMonth(1);
@@ -1266,7 +1321,7 @@ function oficial_calcularIntervalo(codIntervalo:String):Array
 			intervalo.hasta = fechaHasta;
 			break;
 		}
-		
+
 		case "000008": {
 			anio = fechaDesde.getYear() - 1;
 			fechaDesde.setDate(1);
@@ -1279,13 +1334,13 @@ function oficial_calcularIntervalo(codIntervalo:String):Array
 			intervalo.hasta = fechaHasta;
 			break;
 		}
-		
+
 		case "000009": {
 			intervalo.desde = "1970-01-01";
 			intervalo.hasta = "3000-01-01";
 			break;
 		}
-		
+
 		case "000010": {
 			intervalo.desde = "1970-01-01";
 			intervalo.hasta = fechaHasta;
@@ -1345,7 +1400,7 @@ function oficial_crearSubcuentaProv(codSubcuenta:String, idSubcuenta:Number, cod
 	return true;
 }
 
-/** \D Crea las subcuentas  asociadas a un cliente que todavía no existen en los ejercicios con plan general contable 
+/** \D Crea las subcuentas  asociadas a un cliente que todavía no existen en los ejercicios con plan general contable
 @param codCliente: Código de cliente
 @param codSubcuenta: Código de subcuenta
 @param nombre: Nombre del cliente
@@ -1357,7 +1412,7 @@ function oficial_rellenarSubcuentasCli(codCliente:String, codSubcuenta:String, n
 		return true;
 	if (!codSubcuenta)
 		return true;
-	
+
 	var util:FLUtil = new FLUtil;
 	var qry:FLSqlQuery = new FLSqlQuery();
 	qry.setTablesList("ejercicios,co_subcuentascli");
@@ -1366,7 +1421,7 @@ function oficial_rellenarSubcuentasCli(codCliente:String, codSubcuenta:String, n
 	qry.setWhere("s.id IS NULL AND e.estado = 'ABIERTO' AND e.fechafin >= CURRENT_DATE");
 	if (!qry.exec())
 		return false;
-	
+
 	var idSubcuenta:Number;
 	var codEjercicio:String;
 	while (qry.next()) {
@@ -1376,18 +1431,18 @@ function oficial_rellenarSubcuentasCli(codCliente:String, codSubcuenta:String, n
 		idSubcuenta = this.iface.crearSubcuenta(codSubcuenta, nombre, "CLIENT", codEjercicio);
 		if (!idSubcuenta)
 			return false;
-		
+
 		if (idSubcuenta == true)
 			continue;
-		
+
 		if (!this.iface.crearSubcuentaCli(codSubcuenta, idSubcuenta, codCliente, codEjercicio))
 			return false;
 	}
-	
+
 	return true;
 }
 
-/** \D Crea las subcuentas  asociadas a un proveedor que todavía no existen en los ejercicios con plan general contable 
+/** \D Crea las subcuentas  asociadas a un proveedor que todavía no existen en los ejercicios con plan general contable
 @param codProveedor: Código de proveedor
 @param codSubcuenta: Código de subcuenta
 @param nombre: Nombre del proveedor
@@ -1407,7 +1462,7 @@ function oficial_rellenarSubcuentasProv(codProveedor:String, codSubcuenta:String
 	qry.setWhere("s.id IS NULL AND e.estado = 'ABIERTO' AND e.fechafin >= CURRENT_DATE");
 	if (!qry.exec())
 		return false;
-	
+
 	var idSubcuenta:Number;
 	var codEjercicio:String;
 	while (qry.next()) {
@@ -1417,14 +1472,14 @@ function oficial_rellenarSubcuentasProv(codProveedor:String, codSubcuenta:String
 		idSubcuenta = this.iface.crearSubcuenta(codSubcuenta, nombre, "PROVEE", codEjercicio);
 		if (!idSubcuenta)
 			return false;
-		
-		if (idSubcuenta == true) 
+
+		if (idSubcuenta == true)
 			continue;
-		
+
 		if (!this.iface.crearSubcuentaProv(codSubcuenta, idSubcuenta, codProveedor, codEjercicio))
 			return false;
 	}
-	
+
 	return true;
 }
 
@@ -1435,10 +1490,10 @@ function oficial_automataActivado():Boolean
 {
 	if (!sys.isLoadedModule("flautomata"))
 		return false;
-	
+
 	if (formau_automata.iface.pub_activado())
 		return true;
-	
+
 	return false;
 }
 
@@ -1453,7 +1508,7 @@ function oficial_clienteActivo(codCliente:String, fecha:String):Boolean
 	var util:FLUtil = new FLUtil;
 	if (!codCliente || codCliente == "")
 		return true;
-	
+
 	var qryBaja:FLSqlQuery = new FLSqlQuery();
 	qryBaja.setTablesList("clientes");
 	qryBaja.setSelect("debaja, fechabaja");
@@ -1462,13 +1517,13 @@ function oficial_clienteActivo(codCliente:String, fecha:String):Boolean
 	qryBaja.setForwardOnly(true);
 	if (!qryBaja.exec())
 		return false;
-	
+
 	if (!qryBaja.first())
 		return false;
-	
+
 	if (!qryBaja.value("debaja"))
 		return true;
-		
+
 	if (util.daysTo(fecha, qryBaja.value("fechabaja")) <= 0) {
 		if (!this.iface.automataActivado()) {
 			var fechaDdMmAaaa:String = util.dateAMDtoDMA(fecha);
@@ -1507,12 +1562,12 @@ function oficial_obtenerProvincia(formulario:Object, campoId:String, campoProvin
 
 		provincia = provincia.left(provincia.length - 1);
 		provincia = provincia.toUpperCase();
-		
+
 		var where:String = "UPPER(provincia) LIKE '" + provincia + "%'";
 		var codPais:String = formulario.cursor().valueBuffer(campoPais);
 		if (codPais && codPais != "")
 			where += " AND codpais = '" + codPais + "'";
-		
+
 		var qryProvincia:FLSqlQuery = new FLSqlQuery;
 		with (qryProvincia) {
 			setTablesList("provincias");
@@ -1546,7 +1601,7 @@ function oficial_obtenerProvincia(formulario:Object, campoId:String, campoProvin
 				var f:Object = new FLFormSearchDB("provincias");
 				var curProvincias:FLSqlCursor = f.cursor();
 				curProvincias.setMainFilter("idprovincia IN (" + listaProvincias + ")");
-	
+
 				f.setMainWidget();
 				var idProvincia:String = f.exec("idprovincia");
 
@@ -1568,24 +1623,24 @@ function oficial_actualizarContactos20070525():Boolean
 	qryClientes.setFrom("clientes");
 	qryClientes.setSelect("codcliente,codcontacto,contacto");
 	qryClientes.setWhere("");
-	if (!qryClientes.exec()) 
+	if (!qryClientes.exec())
 		return false;
 
 	util.createProgressDialog(util.translate("scripts", "Reorganizando Contactos"), qryClientes.size());
 	util.setProgress(0);
 
 	var cont:Number = 1;
-	
+
 	while (qryClientes.next()) {
 		util.setProgress(cont);
 		cont += 1;
 		var codCliente:String = qryClientes.value("codcliente");
-		
+
 		if(!codCliente) {
 			util.destroyProgressDialog();
 			return false;
 		}
-			
+
 		var qryAgenda:FLSqlQuery = new FLSqlQuery();
 		qryAgenda.setTablesList("contactosclientes");
 		qryAgenda.setFrom("contactosclientes");
@@ -1606,8 +1661,8 @@ function oficial_actualizarContactos20070525():Boolean
 				util.destroyProgressDialog();
 				return false;
 			}
-				
-	
+
+
 			while (qryClientesContactos.next())
 				this.iface.actualizarContactosDeAgenda20070525(codCliente,qryClientesContactos.value("codcontacto"));
 		}
@@ -1623,7 +1678,7 @@ function oficial_actualizarContactos20070525():Boolean
 				util.destroyProgressDialog();
 				return false;
 			}
-			
+
 			var qryContactos:FLSqlQuery = new FLSqlQuery();
 			qryContactos.setTablesList("crm_contactos,contactosclientes");
 			qryContactos.setFrom("crm_contactos INNER JOIN contactosclientes ON crm_contactos.codcontacto = contactosclientes.codcontacto");
@@ -1633,7 +1688,7 @@ function oficial_actualizarContactos20070525():Boolean
 				util.destroyProgressDialog();
 				return false;
 			}
-			
+
 			var codContacto:String = "";
 
 			if (qryContactos.first())
@@ -1656,7 +1711,7 @@ function oficial_actualizarContactos20070525():Boolean
 					util.destroyProgressDialog();
 					return false;
 				}
-			
+
 				var curCliente:FLSqlCursor = new FLSqlCursor("clientes");
 				curCliente.select("codcliente = '" + codCliente + "'");
 				curCliente.setModeAccess(curCliente.Edit);
@@ -1666,7 +1721,7 @@ function oficial_actualizarContactos20070525():Boolean
 				}
 				curCliente.refreshBuffer();
 				curCliente.setValueBuffer("codcontacto", codContacto);
-			
+
 				if (!curCliente.commitBuffer()) {
 					util.destroyProgressDialog();
 					return false;
@@ -1687,24 +1742,24 @@ function oficial_actualizarContactosProv20070702():Boolean
 	qryProveedores.setFrom("proveedores");
 	qryProveedores.setSelect("codproveedor,codcontacto,contacto");
 	qryProveedores.setWhere("");
-	if (!qryProveedores.exec()) 
+	if (!qryProveedores.exec())
 		return false;
 
 	util.createProgressDialog(util.translate("scripts", "Reorganizando Contactos"), qryProveedores.size());
 	util.setProgress(0);
 
 	var cont:Number = 1;
-	
+
 	while (qryProveedores.next()) {
 		util.setProgress(cont);
 		cont += 1;
 		var codProveedor:String = qryProveedores.value("codproveedor");
-		
+
 		if(!codProveedor) {
 			util.destroyProgressDialog();
 			return false;
 		}
-			
+
 		var qryAgenda:FLSqlQuery = new FLSqlQuery();
 		qryAgenda.setTablesList("contactosproveedores");
 		qryAgenda.setFrom("contactosproveedores");
@@ -1726,7 +1781,7 @@ function oficial_actualizarContactosProv20070702():Boolean
 				util.destroyProgressDialog();
 				return false;
 			}
-			
+
 			var qryContactos:FLSqlQuery = new FLSqlQuery();
 			qryContactos.setTablesList("crm_contactos,contactosproveedores");
 			qryContactos.setFrom("crm_contactos INNER JOIN contactosproveedores ON crm_contactos.codcontacto = contactosproveedores.codcontacto");
@@ -1736,7 +1791,7 @@ function oficial_actualizarContactosProv20070702():Boolean
 				util.destroyProgressDialog();
 				return false;
 			}
-			
+
 			var codContacto:String = "";
 
 			if (qryContactos.first())
@@ -1759,7 +1814,7 @@ function oficial_actualizarContactosProv20070702():Boolean
 					util.destroyProgressDialog();
 					return false;
 				}
-			
+
 				var curProveedor:FLSqlCursor = new FLSqlCursor("proveedores");
 				curProveedor.select("codproveedor = '" + codProveedor + "'");
 				curProveedor.setModeAccess(curProveedor.Edit);
@@ -1769,7 +1824,7 @@ function oficial_actualizarContactosProv20070702():Boolean
 				}
 				curProveedor.refreshBuffer();
 				curProveedor.setValueBuffer("codcontacto", codContacto);
-			
+
 				if (!curProveedor.commitBuffer()) {
 					util.destroyProgressDialog();
 					return false;
@@ -1796,7 +1851,7 @@ function oficial_actualizarContactosDeAgenda20070525(codCliente:String,codContac
 		if (!curContactos.valueBuffer("cargo") || curContactos.valueBuffer("cargo") == "") {
 			curContactos.setValueBuffer("cargo", cargoCon);
 		}
-		
+
 		if (!curContactos.valueBuffer("telefono1") || curContactos.valueBuffer("telefono1") == "") {
 			curContactos.setValueBuffer("telefono1", telefonoCon);
 		}
@@ -1823,7 +1878,7 @@ function oficial_actualizarContactosDeAgenda20070525(codCliente:String,codContac
 			setValueBuffer("cargo",cargoCon);
 			setValueBuffer("fax",faxCon);
 		}
-	
+
 		if (!curContactos.commitBuffer())
 			return false;
 
@@ -1852,7 +1907,7 @@ function oficial_actualizarContactosDeAgenda20070525(codCliente:String,codContac
 			return false;
 	}
 
-	
+
 
 	return codContacto;
 }
@@ -1869,7 +1924,7 @@ function oficial_lanzarEvento(cursor:FLSqlCursor, evento:String):Boolean
 	return true;
 }
 
-function oficial_actualizarContactosDeAgendaProv20070702(codProveedor:String,codContacto:String,nombreCon:String,cargoCon:String,telefonoCon:String,faxCon:String,emailCon:String,idAgenda:Number):String 
+function oficial_actualizarContactosDeAgendaProv20070702(codProveedor:String,codContacto:String,nombreCon:String,cargoCon:String,telefonoCon:String,faxCon:String,emailCon:String,idAgenda:Number):String
 {
 	var util:FLUtil;
 	var curContactos:FLSqlCursor = new FLSqlCursor("crm_contactos");
@@ -1884,7 +1939,7 @@ function oficial_actualizarContactosDeAgendaProv20070702(codProveedor:String,cod
 		if (!curContactos.valueBuffer("cargo") || curContactos.valueBuffer("cargo") == "") {
 			curContactos.setValueBuffer("cargo", cargoCon);
 		}
-		
+
 		if (!curContactos.valueBuffer("telefono1") || curContactos.valueBuffer("telefono1") == "") {
 			curContactos.setValueBuffer("telefono1", telefonoCon);
 		}
@@ -1911,7 +1966,7 @@ function oficial_actualizarContactosDeAgendaProv20070702(codProveedor:String,cod
 			setValueBuffer("cargo",cargoCon);
 			setValueBuffer("fax",faxCon);
 		}
-	
+
 		if (!curContactos.commitBuffer())
 			return false;
 
@@ -1940,7 +1995,7 @@ function oficial_actualizarContactosDeAgendaProv20070702(codProveedor:String,cod
 			return false;
 	}
 
-	
+
 
 	return codContacto;
 }
@@ -1987,7 +2042,7 @@ function oficial_elegirOpcion(opciones:Array, titulo:String):Number
 	}
 }
 
-/** \D Pasa a formato de texto una fecha 
+/** \D Pasa a formato de texto una fecha
 @param fecha: Fecha en formato en formato AAAA-MM-DD...
 \end */
 function oficial_textoFecha(fecha:String):String
@@ -2174,7 +2229,7 @@ function oficial_validarNifIva(nifIva:String):String
 /** \D
 Ejecuta un comando externo de forma asíncrona
 @param	comando: Comando a ejecutar
-@return	Array con dos datos: 
+@return	Array con dos datos:
 	ok: True si no hay error, false en caso contrario
 	salida: Mensaje de stdout o stderr obtenido
 \end */
@@ -2216,7 +2271,7 @@ function oficial_existeEnvioMail():Boolean
 
 /** \D si el país de la dirección indicada tiene activado el indicador de validación de sus provincias, se comprueba que la provincia y el país son válidos, informando si es necesario el campo idprovincia
 @param cursor: Cursor de la tabla que contiene la dirección
-@param mtd: Metadatos sobre los campos 
+@param mtd: Metadatos sobre los campos
 @return False si la provincia no es correcta, true si lo es.
 \end */
 function oficial_validarProvincia(cursor:FLSqlCursor, mtd:Array):Boolean
@@ -2274,7 +2329,6 @@ function oficial_escapeQuote(str)
 
 function oficial_calcularIBAN(cuenta, codPais)
 {
-    var util:FLUtil = new FLUtil();
     var _i = this.iface;
     var IBAN = "";
     
@@ -2283,7 +2337,7 @@ function oficial_calcularIBAN(cuenta, codPais)
     }
     var codIso;
     if (codPais && codPais != "") {
-        codIso = util.sqlSelect("paises", "codiso", "codpais = '" + codPais + "'");
+        codIso = AQUtil.sqlSelect("paises", "codiso", "codpais = '" + codPais + "'");
         codIso = (!codIso || codIso == "") ? "ES" : codIso;
     } else {
         codIso = "ES";
@@ -2293,7 +2347,6 @@ function oficial_calcularIBAN(cuenta, codPais)
     
     return IBAN;
 }
-
 
 function oficial_moduloNumero(num, div)
 {
@@ -2306,7 +2359,6 @@ function oficial_moduloNumero(num, div)
     }
     return parcial % div;
 }
-
 
 function oficial_digitoControlMod97(numero, codPais)
 {
@@ -2329,7 +2381,264 @@ function oficial_digitoControlMod97(numero, codPais)
     
     return digControl;
 }
+
+function oficial_calcularIdentificadorAcreedor(cifEmpresa, codCuenta)
+{
+    var _i = this.iface;
+    
+    var codPais = AQUtil.sqlSelect("empresa INNER JOIN paises ON empresa.codpais = paises.codpais","paises.codiso","empresa.cifnif = '" + cifEmpresa + "'","empresa,paises");
+    if (!codPais) {
+        sys.warnMsgBox(sys.translate("No se ha podido obtener el código ISO del país asociado a la empresa"));
+        return false;
+    }
+    var codComercial = AQUtil.sqlSelect("cuentasbanco","sufijo","codcuenta = '" + codCuenta + "'");
+    var numControl = "";
+    
+    cifEmpresa = cifEmpresa.toUpperCase();
+    var carValido = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    for(var i = 0; i < cifEmpresa.length; i++) {
+        if (carValido.find(cifEmpresa.charAt(i)) >= 0) {
+            numControl += cifEmpresa.charAt(i);
+        }
+    }
+    digControl = _i.digitoControlMod97(numControl,codPais);
+        
+    var identificador = codPais + digControl + codComercial + cifEmpresa;
+    
+    return identificador;
+}
 //// OFICIAL /////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+
+/** @class_definition envioMail */
+/////////////////////////////////////////////////////////////////
+//// ENVIO MAIL /////////////////////////////////////////////////
+function envioMail_componerListaDestinatarios(codigo:String, tabla:String):String
+{debug(tabla);
+	var util:FLUtil = new FLUtil();
+	var arrayMails:Array = [];
+	var listaDestinatarios:String;
+	var emailPrincipal:String;
+	var nombrePrincipal:String;
+	var dialog;
+	var q:FLSqlQuery = new FLSqlQuery();
+
+	switch (tabla) {
+		case "clientes": {
+			emailPrincipal = util.sqlSelect("clientes", "email", "codcliente = '" + codigo + "'");
+			nombrePrincipal = util.sqlSelect("clientes", "nombre", "codcliente = '" + codigo + "'");
+
+			q.setTablesList("contactosclientes,crm_contactos");
+			q.setFrom("contactosclientes INNER JOIN crm_contactos ON contactosclientes.codcontacto = crm_contactos.codcontacto");
+			q.setSelect("crm_contactos.email,crm_contactos.nombre");
+			q.setWhere("contactosclientes.codcliente = '" + codigo + "' AND (crm_contactos.email <> '' AND crm_contactos.email IS NOT NULL)");
+			if (!q.exec()) {
+				return false;
+			}
+			dialog = new Dialog(util.translate ( "scripts", "Contactos del cliente" ), 0);
+			break;
+		}
+		case "proveedores": {
+			emailPrincipal = util.sqlSelect("proveedores", "email", "codproveedor = '" + codigo + "'");
+			nombrePrincipal = util.sqlSelect("proveedores", "nombre", "codproveedor = '" + codigo + "'");
+
+			q.setTablesList("contactosproveedores,crm_contactos");
+			q.setFrom("contactosproveedores INNER JOIN crm_contactos ON contactosproveedores.codcontacto = crm_contactos.codcontacto");
+			q.setSelect("crm_contactos.email,crm_contactos.nombre");
+			q.setWhere("contactosproveedores.codproveedor = '" + codigo + "' AND (crm_contactos.email <> '' AND crm_contactos.email IS NOT NULL)");
+			if (!q.exec()) {
+				return false;
+			}
+			dialog = new Dialog(util.translate ( "scripts", "Contactos del proveedor" ), 0);
+			break;
+		}
+	}
+debug("emailPrincipal " + emailPrincipal);
+	dialog.caption = "Selecciona el destinatario";
+	dialog.OKButtonText = util.translate ( "scripts", "Aceptar" );
+	dialog.cancelButtonText = util.translate ( "scripts", "Cancelar" );
+
+	var bgroup:GroupBox = new GroupBox;
+	dialog.add( bgroup );
+	var cB:Array = [];
+	var nEmails:Number = 0;
+
+	cB[nEmails] = new CheckBox;
+	cB[nEmails].text = util.translate ( "scripts", nombrePrincipal + " (" + emailPrincipal + ")");
+	arrayMails[nEmails] = emailPrincipal;
+	cB[nEmails].checked = true;
+	bgroup.add( cB[nEmails] );
+	nEmails ++;
+
+	while (q.next())  {
+		cB[nEmails] = new CheckBox;
+		cB[nEmails].text = util.translate ( "scripts", q.value(1) + " (" + q.value(0) + ")");
+		arrayMails[nEmails] = q.value(0);
+		cB[nEmails].checked = false;
+		bgroup.add( cB[nEmails] );
+		nEmails ++;
+	}
+debug("nEmails " + nEmails);
+	if (nEmails > 1) {
+		nEmails --;
+		var lista:String = "";
+		if(dialog.exec()) {
+			for (var i:Number = 0; i <= nEmails; i++) {
+				if (cB[i].checked == true) {
+debug("arrayMails[i] " + arrayMails[i]);
+					lista += arrayMails[i] + ",";
+				}
+			}
+		}
+		else {
+			return;
+		}
+		lista = lista.left(lista.length -1)
+		if (lista == "") {
+			return;
+		}
+		listaDestinatarios = lista;
+	}
+	else {
+		listaDestinatarios = emailPrincipal;
+	}
+debug("listaDestinatarios " + listaDestinatarios);
+	return listaDestinatarios;
+}
+
+function envioMail_enviarCorreo(cuerpo:String, asunto:String, arrayDest:Array, arrayAttach:Array):Boolean
+{
+	var util:FLUtil = new FLUtil;
+	var comando:Array = this.iface.componerCorreo(cuerpo, asunto, arrayDest, arrayAttach);
+	if (!comando) {
+		return false;
+	}
+	var res:Array = this.iface.ejecutarComandoAsincrono(comando);
+
+	return true;
+}
+
+function envioMail_componerCorreo(cuerpo:String, asunto:String, arrayDest:String, arrayAttach:String):Array
+{
+	var util:FLUtil = new FLUtil();
+	var clienteCorreo = util.readSettingEntry("scripts/flfactinfo/clientecorreo");
+	if (!clienteCorreo || clienteCorreo == "") {
+		MessageBox.warning(util.translate("scripts", "No tiene establecido el tipo de cliente de correo.\nDebe establecer este valor en la pestaÃ±a Correo del formulario de empresa"), MessageBox.Ok, MessageBox.NoButton);
+		return false;
+	}
+	var nombreCorreo = util.readSettingEntry("scripts/flfactinfo/nombrecorreo");
+	if (!nombreCorreo || nombreCorreo == "") {
+		MessageBox.warning(util.translate("scripts", "No tiene establecido el nombre del ejecutable del programa de correo.\nDebe establecer este valor en la pestaÃ±a Correo del formulario de empresa"), MessageBox.Ok, MessageBox.NoButton);
+		return false;
+	}
+
+	var destinatarios:String = "";
+	for (var i:Number = 0; i < arrayDest.length; i++) {
+		if (i > 0) {
+			destinatarios += " ";
+		}
+		destinatarios += arrayDest[i]["direccion"];
+	}
+	var documentos:String = "";
+	if (arrayAttach) {
+		documentos = arrayAttach.join(" ");
+	}
+
+ 	var comando:Array;
+	switch (clienteCorreo) {
+		case "Thunderbird": {
+			if (documentos != "") {
+				comando = [nombreCorreo, "-compose", "to='" + destinatarios + "',subject=", asunto, ",body=", cuerpo, ",attachment=file://" + documentos];
+			} else {
+				comando = [nombreCorreo, "-compose", "to='" + destinatarios + "',subject=", asunto, ",body=", cuerpo];
+			}
+			break;
+		}
+
+		case "Outlook": {
+			if (documentos != "") {
+ 				documentos = Dir.convertSeparators(documentos);
+				comando = ["\"" + nombreCorreo + "\" /c", "ipm.note", "/m", destinatarios, "/a", documentos];
+			} else {
+				comando = ["\"" + nombreCorreo + "\" /c", "ipm.note", "/m" , destinatarios];
+			}
+			break;
+		}
+		case "KMail": {
+			if (documentos != "") {
+				comando = [nombreCorreo , destinatarios, "-s", asunto, "--body", cuerpo, documentos];
+			} else {
+				comando = [nombreCorreo , destinatarios, "-s", asunto, "--body", cuerpo];
+			}
+			break;
+		}
+		default: {
+
+		}
+	}
+	return comando;
+}
+
+function envioMail_existeEnvioMail():Boolean
+{
+	return true;
+}
+
+//// ENVIO MAIL /////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+
+/** @class_definition dtoEsp */
+/////////////////////////////////////////////////////////////////
+//// DESCUENTO ESPECIAL /////////////////////////////////////////
+function dtoEsp_calcularLiquidacionAgente(codLiquidacion:String):Number {
+	var util:FLUtil = new FLUtil();
+
+	var qryFacturas:FLSqlQuery = new FLSqlQuery();
+	qryFacturas.setTablesList("facturascli,lineasfacturascli");
+	qryFacturas.setSelect("coddivisa, tasaconv, facturascli.porcomision, lineasfacturascli.porcomision, neto, facturascli.idfactura, lineasfacturascli.pvptotal, facturascli.pordtoesp");
+	qryFacturas.setFrom("facturascli INNER JOIN lineasfacturascli ON facturascli.idfactura = lineasfacturascli.idfactura");
+	qryFacturas.setWhere("codliquidacion = '" + codLiquidacion + "'");
+	if (!qryFacturas.exec()) {
+		return false;
+	}
+	var total:Number = 0;
+	var comision:Number = 0;
+	var descuento:Number = 0;
+	var tasaconv:Number = 0;
+	var divisaEmpresa:String = util.sqlSelect("empresa","coddivisa","1=1");
+	var idfactura:Number = 0;
+	var comisionFactura:Boolean = false;
+	while (qryFacturas.next()) {
+		if (!idfactura || idfactura != qryFacturas.value("facturascli.idfactura")) {
+			idfactura = qryFacturas.value("facturascli.idfactura");
+			if (parseFloat(qryFacturas.value("facturascli.porcomision"))) {
+				comisionFactura = true;
+				comision = parseFloat(qryFacturas.value("facturascli.porcomision")) * parseFloat(qryFacturas.value("neto")) / 100;
+				tasaconv = parseFloat(qryFacturas.value("tasaconv"));
+				if (qryFacturas.value("coddivisa") == divisaEmpresa) {
+					total += comision;
+				} else {
+					total += comision * tasaconv;
+				}
+			} else {
+				comisionFactura = false;
+			}
+		}
+		if (!comisionFactura) {
+			descuento = parseFloat(qryFacturas.value("facturascli.pordtoesp"));
+			descuento = (isNaN(descuento) ? 0 : descuento);
+			comision = parseFloat(qryFacturas.value("lineasfacturascli.porcomision")) * (parseFloat(qryFacturas.value("lineasfacturascli.pvptotal") * (100 - descuento) / 100)) / 100;
+			tasaconv = parseFloat(qryFacturas.value("tasaconv"));
+			if (qryFacturas.value("coddivisa") == divisaEmpresa) {
+				total += comision;
+			} else {
+				total += comision * tasaconv ;
+			}
+		}
+	}
+	return total;
+}
+//// DESCUENTO ESPECIAL /////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 
 /** @class_definition head */
@@ -2338,3 +2647,4 @@ function oficial_digitoControlMod97(numero, codPais)
 
 //// DESARROLLO /////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
+
