@@ -18,7 +18,6 @@
 //// DECLARACION ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-/** @class_declaration interna */
 //////////////////////////////////////////////////////////////////
 //// INTERNA /////////////////////////////////////////////////////
 class interna {
@@ -31,7 +30,6 @@ class interna {
 //// INTERNA /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-/** @class_declaration oficial */
 //////////////////////////////////////////////////////////////////
 //// OFICIAL /////////////////////////////////////////////////////
 class oficial extends interna {
@@ -55,16 +53,50 @@ class oficial extends interna {
 //// OFICIAL /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-/** @class_declaration head */
+/** @class_declaration boe2011 */
+//////////////////////////////////////////////////////////////////
+//// OFICIAL /////////////////////////////////////////////////////
+class boe2011 extends oficial {
+    function boe2011( context ) { oficial( context ); }
+    function presTelematica() {
+        return this.ctx.boe2011_presTelematica();
+    }
+    function presTelematica2011() {
+        return this.ctx.boe2011_presTelematica2011();
+    }
+    function nombreFichero():String {
+        return this.ctx.boe2011_nombreFichero();
+    }
+    function formatoFichero():String{
+        return this.ctx.boe2011_formatoFichero();
+    }
+    function tiporeg1(curMod:FLSlqCursor):String {
+        return this.ctx.boe2011_tiporeg1(curMod);
+    }
+    function tiporeg2e(curMod:FLSlqCursor,curMod2e:FlsqlCursor,formato:String):String {
+        return this.ctx.boe2011_tiporeg2e(curMod,curMod2e,formato);
+    }
+    function tiporeg2r(curMod:FLSlqCursor,curMod2r:FlsqlCursor,formato:String):String {
+        return this.ctx.boe2011_tiporeg2r(curMod,curMod2r,formato);
+    }
+    function tiporeg2b(curMod:FLSlqCursor,curMod2b:FlsqlCursor,formato:String):String {
+        return this.ctx.boe2011_tiporeg2b(curMod,curMod2b,formato);
+    }
+    function tiporeg2i(curMod:FLSlqCursor,curMod2i:FlsqlCursor,formato:String):String {
+        return this.ctx.boe2011_tiporeg2i(curMod,curMod2i,formato);
+    }
+}
+//// OFICIAL /////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 /////////////////////////////////////////////////////////////////
 //// DESARROLLO /////////////////////////////////////////////////
-class head extends oficial {
-	function head( context ) { oficial ( context ); }
+class head extends boe2011 {
+	function head( context ) { boe2011 ( context ); }
 }
 //// DESARROLLO /////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 
-/** @class_declaration ifaceCtx */
 /////////////////////////////////////////////////////////////////
 //// INTERFACE  /////////////////////////////////////////////////
 class ifaceCtx extends head {
@@ -79,7 +111,6 @@ const iface = new ifaceCtx( this );
 //// DEFINICION ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-/** @class_definition interna */
 //////////////////////////////////////////////////////////////////
 //// INTERNA /////////////////////////////////////////////////////
 function interna_init()
@@ -90,7 +121,6 @@ function interna_init()
 //// INTERNA /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 
-/** @class_definition oficial */
 //////////////////////////////////////////////////////////////////
 //// OFICIAL /////////////////////////////////////////////////////
 /** \D Genera un fichero para realizar la presentación telemática del modelo
@@ -917,7 +947,779 @@ function oficial_formatoNumeroCSV(numero:Number, tabla:String, campo:String):Str
 //// OFICIAL /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 
-/** @class_definition head */
+/** @class_definition boe2011 */
+//////////////////////////////////////////////////////////////////
+//// BOE2011 /////////////////////////////////////////////////////
+/** \D Genera un fichero para realizar la presentación telemática del modelo
+\end */
+
+function boe2011_presTelematica()
+{
+    this.iface.presTelematica2011();
+}
+
+function boe2011_presTelematica2011() {
+    
+    var curMod:FLSqlCursor = this.cursor();
+    if (!curMod.isValid()){
+        return;
+    }
+    
+    var nombreFichero = this.iface.nombreFichero();
+    if (!nombreFichero){
+        return;
+    }
+
+    var formatoFichero = this.iface.formatoFichero();
+    if (!formatoFichero) {
+        return;
+    }
+    
+     var util:FLUtil = new FLUtil();
+    util.createProgressDialog(util.translate("scripts", "Generando registro de tipo 1"), 10);
+    util.setProgress(2);
+
+    flcontmode.iface.error = "";
+    
+    var file:Object = new File(nombreFichero);
+    file.open(File.WriteOnly);
+    
+    file.write(this.iface.tiporeg1(curMod) + "\r\n");
+    
+    util.setProgress(10);
+    util.destroyProgressDialog();
+    
+    var curMod2e:FLSqlCursor = new FLSqlCursor("co_facturasemi340");
+    curMod2e.select("idmodelo = " + curMod.valueBuffer("idmodelo") + " AND (omitir = false OR omitir is null) ");
+    util.createProgressDialog(util.translate("scripts", "Generando registro de tipo 2 facturas expedidas"), curMod2e.size());
+    var progreso:Number = 0;
+    while (curMod2e.next()){
+        util.setProgress(progreso++);
+        file.write(this.iface.tiporeg2e(curMod,curMod2e,formatoFichero) + "\r\n");
+    }
+    util.destroyProgressDialog();
+    
+    var curMod2r:FLSqlCursor = new FLSqlCursor("co_facturasrec340");
+    curMod2r.select("idmodelo = " + curMod.valueBuffer("idmodelo"));
+    util.createProgressDialog(util.translate("scripts", "Generando registro de tipo 2 facturas recibidas"), curMod2r.size());
+    var progreso:Number = 0;
+    while (curMod2r.next()){
+        util.setProgress(progreso++);
+        file.write(this.iface.tiporeg2r(curMod,curMod2r,formatoFichero) + "\r\n");
+    }
+    util.destroyProgressDialog();
+    
+    var curMod2b:FLSqlCursor = new FLSqlCursor("co_bienesinv340");
+    curMod2b.select("idmodelo = " + curMod.valueBuffer("idmodelo"));
+    util.createProgressDialog(util.translate("scripts", "Generando registro de tipo 2 bienes inmuebles"), curMod2b.size());
+    var progreso:Number = 0;
+    while (curMod2b.next()){
+        util.setProgress(progreso++);
+        file.write(this.iface.tiporeg2b(curMod,curMod2b,formatoFichero) + "\r\n");
+    }
+    util.destroyProgressDialog();
+    
+    
+    var curMod2i:FLSqlCursor = new FLSqlCursor("co_opintracomunitarias340");
+    curMod2i.select("idmodelo = " + curMod.valueBuffer("idmodelo"));
+    util.createProgressDialog(util.translate("scripts", "Generando registro de tipo 2 bienes inmuebles"), curMod2i.size());
+    var progreso:Number = 0;
+    while (curMod2i.next()){
+        util.setProgress(progreso++);
+        file.write(this.iface.tiporeg2i(curMod,curMod2i,formatoFichero) + "\r\n");
+    }
+    
+    file.close();
+
+    // Genera copia del fichero en codificacion ISO
+    file.open(File.ReadOnly);
+    var content = file.read();
+    file.close();
+
+    var fileIso = new File(nombreFichero + ".iso8859" );
+    fileIso.open(File.WriteOnly);
+    fileIso.write( sys.fromUnicode( content, "ISO-8859-1" ) );
+    fileIso.close();
+     
+    util.destroyProgressDialog();
+    
+    var util:FLUtil = new FLUtil();
+    if (flcontmode.iface.error == "") {
+        MessageBox.information(util.translate("scripts", "Generado fichero en:\n\n" + nombreFichero+".iso8859" + "\n\n"), MessageBox.Ok, MessageBox.NoButton, MessageBox.NoButton);
+    } else {
+        MessageBox.information(util.translate("scripts", "Se han detectado los siguientes errores :\n\n" +flcontmode.iface.error+ "\n\n"), MessageBox.Ok, MessageBox.NoButton, MessageBox.NoButton);
+    }
+}
+
+function boe2011_nombreFichero():String
+{
+    var nombreFichero:String = FileDialog.getSaveFileName("*.*");
+    if (!nombreFichero) {
+        MessageBox.warning("No ha indicado el nombre del fichero",MessageBox.Ok, MessageBox.NoButton);
+        return "";
+    } else {
+        return nombreFichero;
+    }
+
+}
+
+function boe2011_formatoFichero():String{
+    
+    var util:FLUtil = new FLUtil();
+    var formatos:Array = [util.translate("scripts", "Fichero TXT formato B.O.E."), util.translate("scripts", "Ficheros CSV con separador \"|\"")];
+        
+    var formato:String;
+    var seleccion:String = Input.getItem(util.translate("scripts", "Seleccione formato"), formatos);
+    if (seleccion == util.translate("scripts", "Fichero TXT formato B.O.E.")) {
+        formato = "BOE";
+    } else {
+        formato = "CSV";
+    }
+    
+    return formato;
+}
+    
+function boe2011_tiporeg1(curMod:FLSlqCursor):String {
+
+    //Registro de tipo 1 declarante
+    var codReg = "1";
+    var desReg:Array = flcontmode.iface.pub_desRegistro340(codReg);
+    
+    var util:FLUtil = new FLUtil();
+    var valorCampo;
+    var nombreCampo = "";
+    var formatoCampo = "";
+    var registro:Object = {};
+    
+    for (var i = 0; i < desReg.length; i++) {
+        nombreCampo = desReg[i][0];
+        longitudCampo = desReg[i][2];
+        formatoCampo = desReg[i][3];
+        if (formatoCampo == "B") {
+            valorCampo = " ";
+        } else {
+            switch(nombreCampo) {
+                case "tiporeg":
+                    valorCampo = "1";
+                    break;
+                
+                case "modelo":
+                    valorCampo = "340";
+                    break;
+                    
+                case "ejercicio":
+                    var fecha:Date = curMod.valueBuffer("fechainicio");
+                    valorCampo = fecha.getYear();
+                    break;
+                
+                case "complementaria":
+                    if (curMod.valueBuffer("complementaria")) {
+                        valorCampo = "C";
+                    } else {
+                        valorCampo = " ";
+                    }
+                    break;
+                case "sustitutiva":
+                    if (curMod.valueBuffer("sustitutiva")) {
+                        valorCampo = "S";
+                    } else{
+                        valorCampo = " ";
+                    }
+                    break;
+                    
+                case "jusanterior":
+                    if (curMod.valueBuffer("complementaria") || curMod.valueBuffer("sustitutiva")) {
+                        valorCampo = curMod.valueBuffer("numanterior");
+                    } else {
+                        valorCampo = "0";
+                    }
+                    break;
+                
+                case "periodo":
+                    if (curMod.valueBuffer("tipoperiodo") == "Trimestre") {
+                        valorCampo = curMod.valueBuffer("trimestre");
+                    } else {
+                        valorCampo = curMod.valueBuffer("mes");
+                    }
+                    break;
+                    
+                case "sbaseimponible":
+                    if (curMod.valueBuffer("baseimponible") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;
+                    
+                case "stotalfacturas":
+                    if (curMod.valueBuffer("totalfacturas") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;
+                
+                case "scuotaimpuesto":
+                    if (curMod.valueBuffer("cuotaimpuesto") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;
+                    
+                case "baseimponible":
+                case "cuotaimpuesto":
+                case "totalfacturas":
+                    valorCampo = flcontmode.iface.pub_formatoNumero(Math.abs(parseFloat(curMod.valueBuffer(nombreCampo))), (parseFloat(longitudCampo)-2), 2); 
+                    break;
+
+                default :
+                    valorCampo = curMod.valueBuffer(nombreCampo);
+                    break;
+            }
+        }
+
+        registro[nombreCampo] = valorCampo;
+    }
+    
+    return flcontmode.iface.pub_generarRegistro(desReg,registro);
+    
+}
+
+/*Registro de declarados facturas emitidas*/
+function boe2011_tiporeg2e(curMod:FLSlqCursor,curMod2e:FlsqlCursor,formato:String):String {
+
+    var codReg = "2e";
+    var desReg:Array = flcontmode.iface.pub_desRegistro340(codReg);
+    
+    var util:FLUtil = new FLUtil();
+    var valorCampo;
+    var nombreCampo = "";
+    var formatoCampo = "";
+    var registro:Object = {};
+    
+    for (var i = 0; i < desReg.length; i++) {
+        nombreCampo = desReg[i][0];
+        longitudCampo = desReg[i][2];
+        formatoCampo = desReg[i][3];
+        if (formatoCampo == "B") {
+            valorCampo = " ";
+        } else {
+            switch(nombreCampo) {
+                case "tiporeg":
+                    valorCampo = "2";
+                    break;
+                
+                case "modelo":
+                    valorCampo = "340";
+                    break;
+                    
+                case "ejercicio":
+                    var fecha:Date = curMod.valueBuffer("fechainicio");
+                    valorCampo = fecha.getYear();
+                    break;
+                    
+                case "cifnif":
+                    valorCampo = curMod.valueBuffer("cifnif");
+                    break;
+                    
+                case "nifdeclarado":
+                    valorCampo = curMod2e.valueBuffer("cifnif");
+                    break;                
+                
+                case "fechaexpedicion":
+                    var temp = curMod2e.valueBuffer("fechaexpedicion");
+                    if (!temp && curMod2e.valueBuffer("importemetalico") != 0) {
+                        valorCampo = "0";
+                    } else {
+                        valorCampo = this.iface.formatoFecha(temp.toString());
+                    }
+                    break;
+                    
+                case "fechaoperacion":
+                    var temp = curMod2e.valueBuffer("fechaoperacion");
+                    if (!temp && curMod2e.valueBuffer("importemetalico") != 0) {
+                        valorCampo = "0";
+                    } else {
+                        valorCampo = this.iface.formatoFecha(temp.toString());
+                    }
+                    break;
+
+                case "sbaseimponible":
+                    if (curMod2e.valueBuffer("baseimponible") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;
+                  
+                case "scuotaimpuesto":
+                    if (curMod2e.valueBuffer("cuotaimpuesto") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;
+
+                case "simportetotal":
+                    if (curMod2e.valueBuffer("importetotal") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;
+
+                case "sbaseimponiblecoste":
+                    if (curMod2e.valueBuffer("baseimponiblecoste") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;                    
+                
+                case "scuotarecequi":
+                    if (curMod2e.valueBuffer("cuotarecequi") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;
+                
+                case "tipoimpositivo":
+                case "tiporecequi":
+                    valorCampo = flcontmode.iface.pub_formatoNumero(parseFloat(curMod2e.valueBuffer(nombreCampo)), (parseFloat(longitudCampo)-2), 2); 
+                    break;
+                    
+                case "baseimponible":
+                case "cuotaimpuesto":
+                case "importetotal":
+                case "baseimponiblecoste":
+                case "cuotarecequi":
+                case "importemetalico":
+                case "importeinmuebles":
+                    valorCampo = flcontmode.iface.pub_formatoNumero(Math.abs(parseFloat(curMod2e.valueBuffer(nombreCampo))), (parseFloat(longitudCampo)-2), 2); 
+                    break;
+
+                case "idenfactura":
+                case "numregistro":
+                    var temp = curMod2e.valueBuffer(nombreCampo);
+                    if (!temp && curMod2e.valueBuffer("importemetalico") != 0) {
+                        valorCampo = "";
+                    } else {
+                        valorCampo = temp;
+                    }
+                    break;
+                
+                case "numfacturas":
+                case "desgloseregistro":
+                    var temp = curMod2e.valueBuffer(nombreCampo);
+                    if (!temp && curMod2e.valueBuffer("importemetalico") != 0) {
+                        valorCampo = "0";
+                    } else {
+                        valorCampo = temp;
+                    }
+                    break;
+                    
+                case "ejerciciometalico":
+                    if (!curMod2e.valueBuffer("importemetalico"))
+                        valorCampo = "0";
+                    else
+                        valorCampo = curMod2e.valueBuffer("ejerciciometalico");
+                    break;
+
+                default :
+                    valorCampo = curMod2e.valueBuffer(nombreCampo);
+                    break;
+            }
+        }
+
+        registro[nombreCampo] = valorCampo;
+    }
+    
+    if (formato == "BOE") {
+        return flcontmode.iface.pub_generarRegistro(desReg,registro);
+    } else {
+        /*PARA VALIDAR REGISTRO*/
+        var tempValidar = flcontmode.iface.pub_generarRegistro(desReg,registro);
+        return flcontmode.iface.pub_generarCSV(desReg,registro);
+    }
+
+}
+
+/*Registro de declarados facturas recibidas*/
+function boe2011_tiporeg2r(curMod:FLSlqCursor,curMod2r:FlsqlCursor,formato:String):String {
+
+    var codReg = "2r";
+    var desReg:Array = flcontmode.iface.pub_desRegistro340(codReg);
+    
+    var util:FLUtil = new FLUtil();
+    var valorCampo;
+    var nombreCampo = "";
+    var formatoCampo = "";
+    var registro:Object = {};
+    
+    for (var i = 0; i < desReg.length; i++) {
+        nombreCampo = desReg[i][0];
+        longitudCampo = desReg[i][2];
+        formatoCampo = desReg[i][3];
+        if (formatoCampo == "B") {
+            valorCampo = " ";
+        } else {
+            switch(nombreCampo) {
+                case "tiporeg":
+                    valorCampo = "2";
+                    break;
+                
+                case "modelo":
+                    valorCampo = "340";
+                    break;
+                    
+                case "ejercicio":
+                    var fecha:Date = curMod.valueBuffer("fechainicio");
+                    valorCampo = fecha.getYear();
+                    break;
+                    
+                case "cifnif":
+                    valorCampo = curMod.valueBuffer("cifnif");
+                    break;
+                    
+                case "nifdeclarado":
+                    valorCampo = curMod2r.valueBuffer("cifnif");
+                    break;                
+                
+                case "fechaexpedicion":
+                    var temp = curMod2r.valueBuffer("fechaexpedicion");
+                    valorCampo = this.iface.formatoFecha(temp.toString());
+                    break;
+                    
+                case "fechaoperacion":
+                    var temp = curMod2r.valueBuffer("fechaoperacion");
+                    valorCampo = this.iface.formatoFecha(temp.toString());
+                    break;
+
+                case "sbaseimponible":
+                    if (curMod2r.valueBuffer("baseimponible") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;
+                  
+                case "scuotaimpuesto":
+                    if (curMod2r.valueBuffer("cuotaimpuesto") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;
+
+                case "simportetotal":
+                    if (curMod2r.valueBuffer("importetotal") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;
+
+                case "sbaseimponiblecoste":
+                    if (curMod2r.valueBuffer("baseimponiblecoste") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;  
+                    
+                case "scuotadeducible":
+                    if (curMod2r.valueBuffer("cuotadeducible") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;  
+                
+                case "tipoimpositivo":  
+                    valorCampo = flcontmode.iface.pub_formatoNumero(parseFloat(curMod2r.valueBuffer(nombreCampo)), (parseFloat(longitudCampo)-2), 2); 
+                    break;
+                    
+                case "baseimponible":
+                case "cuotaimpuesto":
+                case "importetotal":
+                case "baseimponiblecoste":
+                case "cuotadeducible":
+                    valorCampo = flcontmode.iface.pub_formatoNumero(Math.abs(parseFloat(curMod2r.valueBuffer(nombreCampo))), (parseFloat(longitudCampo)-2), 2); 
+                    break;
+                    
+                default :
+                    valorCampo = curMod2r.valueBuffer(nombreCampo);
+                    break;
+            }
+        }
+
+        registro[nombreCampo] = valorCampo;
+    }
+    
+    if (formato == "BOE") {
+        return flcontmode.iface.pub_generarRegistro(desReg,registro);
+    } else {
+        /*PARA VALIDAR REGISTRO*/
+        var tempValidar = flcontmode.iface.pub_generarRegistro(desReg,registro);
+        return flcontmode.iface.pub_generarCSV(desReg,registro);
+    }
+
+}
+
+/*Registro de declarados de bienes de inversión*/
+function boe2011_tiporeg2b(curMod:FLSlqCursor,curMod2b:FlsqlCursor,formato:String):String {
+
+    var codReg = "2b";
+    var desReg:Array = flcontmode.iface.pub_desRegistro340(codReg);
+    
+    var util:FLUtil = new FLUtil();
+    var valorCampo;
+    var nombreCampo = "";
+    var formatoCampo = "";
+    var registro:Object = {};
+    
+    for (var i = 0; i < desReg.length; i++) {
+        nombreCampo = desReg[i][0];
+        longitudCampo = desReg[i][2];
+        formatoCampo = desReg[i][3];
+        if (formatoCampo == "B") {
+            valorCampo = " ";
+        } else {
+            switch(nombreCampo) {
+                case "tiporeg":
+                    valorCampo = "2";
+                    break;
+                
+                case "modelo":
+                    valorCampo = "340";
+                    break;
+                    
+                case "ejercicio":
+                    var fecha:Date = curMod.valueBuffer("fechainicio");
+                    valorCampo = fecha.getYear();
+                    break;
+                    
+                case "cifnif":
+                    valorCampo = curMod.valueBuffer("cifnif");
+                    break;
+                    
+                case "nifdeclarado":
+                    valorCampo = curMod2b.valueBuffer("cifnif");
+                    break;                
+                
+                case "fechaexpedicion":
+                    var temp = curMod2b.valueBuffer("fechaexpedicion");
+                    valorCampo = this.iface.formatoFecha(temp.toString());
+                    break;
+                    
+                case "fechaoperacion":
+                    var temp = curMod2b.valueBuffer("fechaoperacion");
+                    valorCampo = this.iface.formatoFecha(temp.toString());
+                    break;
+
+                case "sbaseimponible":
+                    if (curMod2b.valueBuffer("baseimponible") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;
+                  
+                case "scuotaimpuesto":
+                    if (curMod2b.valueBuffer("cuotaimpuesto") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;
+
+                case "simportetotal":
+                    if (curMod2b.valueBuffer("importetotal") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;
+
+                case "sbaseimponiblecoste":
+                    if (curMod2b.valueBuffer("baseimponiblecoste") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;  
+                    
+                case "sreganual":
+                    if (curMod2b.valueBuffer("reganual") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;  
+                    
+                case "sreganualefect":
+                    if (curMod2b.valueBuffer("reganualefect") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;  
+                
+                case "tipoimpositivo": 
+                    valorCampo = flcontmode.iface.pub_formatoNumero(parseFloat(curMod2b.valueBuffer(nombreCampo)), (parseFloat(longitudCampo)-2), 2); 
+                    break;
+                    
+                case "baseimponible":
+                case "cuotaimpuesto":
+                case "importetotal":
+                case "baseimponiblecoste":
+                case "reganual":
+                case "reganualefect":
+                    valorCampo = flcontmode.iface.pub_formatoNumero(Math.abs(parseFloat(curMod2b.valueBuffer(nombreCampo))), (parseFloat(longitudCampo)-2), 2); 
+                    break;
+                    
+            case "fechautilizacion":
+                    var temp = curMod2b.valueBuffer("fechautilizacion");
+                    valorCampo = this.iface.formatoFecha(temp.toString());
+                    break;
+                    
+                default :
+                    valorCampo = curMod2b.valueBuffer(nombreCampo);
+                    break;
+            }
+        }
+
+        registro[nombreCampo] = valorCampo;
+    }
+    
+    if (formato == "BOE") {
+        return flcontmode.iface.pub_generarRegistro(desReg,registro);
+    } else {
+        /*PARA VALIDAR REGISTRO*/
+        var tempValidar = flcontmode.iface.pub_generarRegistro(desReg,registro);
+        return flcontmode.iface.pub_generarCSV(desReg,registro);
+    }
+
+}
+
+/*Registro de declarados de determinadas operaciones intracomunitarias*/
+function boe2011_tiporeg2i(curMod:FLSlqCursor,curMod2i:FlsqlCursor,formato:String):String {
+
+    var codReg = "2i";
+    var desReg:Array = flcontmode.iface.pub_desRegistro340(codReg);
+    
+    var util:FLUtil = new FLUtil();
+    var valorCampo;
+    var nombreCampo = "";
+    var formatoCampo = "";
+    var registro:Object = {};
+    
+    for (var i = 0; i < desReg.length; i++) {
+        nombreCampo = desReg[i][0];
+        longitudCampo = desReg[i][2];
+        formatoCampo = desReg[i][3];
+        if (formatoCampo == "B") {
+            valorCampo = " ";
+        } else {
+            switch(nombreCampo) {
+                case "tiporeg":
+                    valorCampo = "2";
+                    break;
+                
+                case "modelo":
+                    valorCampo = "340";
+                    break;
+                    
+                case "ejercicio":
+                    var fecha:Date = curMod.valueBuffer("fechainicio");
+                    valorCampo = fecha.getYear();
+                    break;
+                    
+                case "cifnif":
+                    valorCampo = curMod.valueBuffer("cifnif");
+                    break;
+                    
+                case "nifdeclarado":
+                    valorCampo = curMod2i.valueBuffer("cifnif");
+                    break;                
+                
+                case "fechaexpedicion":
+                    var temp = curMod2i.valueBuffer("fechaexpedicion");
+                    valorCampo = this.iface.formatoFecha(temp.toString());
+                    break;
+                    
+                case "fechaoperacion":
+                    var temp = curMod2i.valueBuffer("fechaoperacion");
+                    valorCampo = this.iface.formatoFecha(temp.toString());
+                    break;
+
+                case "sbaseimponible":
+                    if (curMod2i.valueBuffer("baseimponible") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;
+                  
+                case "scuotaimpuesto":
+                    if (curMod2i.valueBuffer("cuotaimpuesto") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;
+
+                case "simportetotal":
+                    if (curMod2i.valueBuffer("importetotal") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;
+
+                case "sbaseimponiblecoste":
+                    if (curMod2i.valueBuffer("baseimponiblecoste") < 0) {
+                        valorCampo = "N"; 
+                    }else {
+                        valorCampo = " ";
+                    }
+                    break;  
+                
+                case "tipoimpositivo": 
+                    valorCampo = flcontmode.iface.pub_formatoNumero(parseFloat(curMod2i.valueBuffer(nombreCampo)), (parseFloat(longitudCampo)-2), 2); 
+                    break;
+                    
+                case "baseimponible":
+                case "cuotaimpuesto":
+                case "importetotal":
+                case "baseimponiblecoste":
+                    valorCampo = flcontmode.iface.pub_formatoNumero(Math.abs(parseFloat(curMod2i.valueBuffer(nombreCampo))), (parseFloat(longitudCampo)-2), 2); 
+                    break;
+                    
+                default :
+                    valorCampo = curMod2i.valueBuffer(nombreCampo);
+                    break;
+            }
+        }
+
+        registro[nombreCampo] = valorCampo;
+    }
+    
+    if (formato == "BOE") {
+        return flcontmode.iface.pub_generarRegistro(desReg,registro);
+    } else {
+        /*PARA VALIDAR REGISTRO*/
+        var tempValidar = flcontmode.iface.pub_generarRegistro(desReg,registro);
+        return flcontmode.iface.pub_generarCSV(desReg,registro);
+    }
+
+}
+
+//// BOE2011 /////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 /////////////////////////////////////////////////////////////////
 //// DESARROLLO /////////////////////////////////////////////////
 

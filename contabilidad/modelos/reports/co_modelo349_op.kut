@@ -9,6 +9,7 @@
 
 <DetailHeader Height="70" Level="1" >
 	<CalculatedField CalculationType="6" FunctionName="flcontmode.iface.pub_iniciarPagina" WordWrap="0" Width="0" X="0" Y="0" BorderStyle="0" NegValueColor="0,0,0" Height="0" HAlignment="0" DataType="0" Field="" DateFormat="11" Currency="32" BorderColor="0,0,0" BackgroundColor="230,230,230" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" CommaSeparator="44" Text="" FontWeight="50" FontSize="11" BorderWidth="1" Precision="2" FontFamily="Arial" />
+	<CalculatedField CalculationType="6" FunctionName="flcontmode.pub_iniciarSubtotales" WordWrap="0" Width="0" X="0" Y="0" BorderStyle="0" NegValueColor="0,0,0" Height="0" HAlignment="0" DataType="0" Field="" DateFormat="11" Currency="32" BorderColor="0,0,0" BackgroundColor="230,230,230" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" CommaSeparator="44" Text="" FontWeight="50" FontSize="11" BorderWidth="1" Precision="2" FontFamily="Arial" />
 	
 	<Label WordWrap="0" Width="300" X="0" Y="0" BorderStyle="0" Height="18" HAlignment="0" BorderColor="0,0,0" BackgroundColor="255,255,255" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" Text="Datos identificativos de esta hoja interior" FontWeight="75" FontSize="12" BorderWidth="1" FontFamily="Arial" />
 	
@@ -49,6 +50,7 @@
 
 <Detail Height="57" Level="1">
 	<CalculatedField CalculationType="6" FunctionName="flcontmode.iface.pub_siguienteOP349" WordWrap="0" Width="100" X="0" Y="2" BorderStyle="0" NegValueColor="0,0,0" Height="18" HAlignment="1" DataType="0" Field="" DateFormat="11" Currency="32" BorderColor="0,0,0" BackgroundColor="100,100,100" FontItalic="0" VAlignment="1" ForegroundColor="255,255,255" CommaSeparator="44" Text="" FontWeight="65" FontSize="11" BorderWidth="1" Precision="2" FontFamily="Arial" />
+	<CalculatedField CalculationType="6" FunctionName="flcontmode.pub_acumularSubtotales" WordWrap="0" Width="0" X="0" Y="2" BorderStyle="0" NegValueColor="0,0,0" Height="0" HAlignment="1" DataType="0" Field="" DateFormat="11" Currency="32" BorderColor="0,0,0" BackgroundColor="100,100,100" FontItalic="0" VAlignment="1" ForegroundColor="255,255,255" CommaSeparator="44" Text="" FontWeight="65" FontSize="11" BorderWidth="1" Precision="2" FontFamily="Arial" />
 	
 	<Label WordWrap="0" Width="50" X="0" Y="20" BorderStyle="0" Height="15" HAlignment="1" BorderColor="0,0,0" BackgroundColor="255,255,255" FontItalic="0" VAlignment="2" ForegroundColor="0,0,0" Text="Cod.País" FontWeight="50" FontSize="9" BorderWidth="1" FontFamily="Arial" />
 	<Field WordWrap="0" Width="30" X="0" Y="35" BorderStyle="0" NegValueColor="0,0,0" Height="18" HAlignment="0" DataType="0" Field="op.codue" DateFormat="11" Currency="32" BorderColor="0,0,0" BackgroundColor="230,230,230" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" CommaSeparator="44" Text="" FontWeight="50" FontSize="11" BorderWidth="1" Precision="2" FontFamily="Arial" />
@@ -69,20 +71,39 @@
  </Detail>
  
  
- <AddOnFooter Height="40" Level="1">
+ <AddOnFooter Height="80" Level="1">
 	 
-	 <Label WordWrap="0" Width="230" X="200" Y="20" BorderStyle="0" Height="18" HAlignment="0" BorderColor="0,0,0" BackgroundColor="255,255,255" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" Text="Total por hojas.........................................................................................." FontWeight="75" FontSize="12" BorderWidth="1" FontFamily="Arial" />
-	 
-	 <Label WordWrap="0" Width="130" X="470" Y="10" BorderStyle="0" Height="10" HAlignment="0" BorderColor="0,0,0" BackgroundColor="255,255,255" FontItalic="0" VAlignment="2" ForegroundColor="0,0,0" Text="Base imponible" FontWeight="50" FontSize="9" BorderWidth="1" FontFamily="Arial" />
-	 <CalculatedField CalculationType="1" WordWrap="0" Width="130" X="470" Y="20" BorderStyle="0" NegValueColor="0,0,0" Height="18" HAlignment="2" DataType="2" Field="op.baseimponible" DateFormat="11" Currency="32" BorderColor="0,0,0" BackgroundColor="230,230,230" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" CommaSeparator="44" Text="" FontWeight="50" FontSize="11" BorderWidth="1" Precision="2" FontFamily="Arial" />
- </AddOnFooter>
-
- <DetailFooter Height="40" Level="1">
-	
- <Label WordWrap="0" Width="230" X="200" Y="20" BorderStyle="0" Height="18" HAlignment="0" BorderColor="0,0,0" BackgroundColor="255,255,255" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" Text="Total por hojas.........................................................................................." FontWeight="75" FontSize="12" BorderWidth="1" FontFamily="Arial" />
+ <Label WordWrap="0" Width="230" X="200" Y="20" BorderStyle="0" Height="18" HAlignment="0" BorderColor="0,0,0" BackgroundColor="255,255,255" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" Text="Total por hojas (A) ....................................................................................." FontWeight="75" FontSize="12" BorderWidth="1" FontFamily="Arial" />
  
  <Label WordWrap="0" Width="130" X="470" Y="10" BorderStyle="0" Height="10" HAlignment="0" BorderColor="0,0,0" BackgroundColor="255,255,255" FontItalic="0" VAlignment="2" ForegroundColor="0,0,0" Text="Base imponible" FontWeight="50" FontSize="9" BorderWidth="1" FontFamily="Arial" />
- <CalculatedField CalculationType="1" WordWrap="0" Width="130" X="470" Y="20" BorderStyle="0" NegValueColor="0,0,0" Height="18" HAlignment="2" DataType="2" Field="op.baseimponible" DateFormat="11" Currency="32" BorderColor="0,0,0" BackgroundColor="230,230,230" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" CommaSeparator="44" Text="" FontWeight="50" FontSize="11" BorderWidth="1" Precision="2" FontFamily="Arial" />
+ <CalculatedField CalculationType="6" FunctionName = "flcontmode.pub_mostrarSubtotales" WordWrap="0" Width="130" X="470" Y="20" BorderStyle="0" NegValueColor="0,0,0" Height="18" HAlignment="2" DataType="2" Field="A" DateFormat="11" Currency="32" BorderColor="0,0,0" BackgroundColor="230,230,230" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" CommaSeparator="44" Text="" FontWeight="50" FontSize="11" BorderWidth="1" Precision="2" FontFamily="Arial" />
+	
+  <Label WordWrap="0" Width="230" X="200" Y="40" BorderStyle="0" Height="18" HAlignment="0" BorderColor="0,0,0" BackgroundColor="255,255,255" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" Text="Total por hojas (E) ....................................................................................." FontWeight="75" FontSize="12" BorderWidth="1" FontFamily="Arial" />
+ 
+ <Label WordWrap="0" Width="130" X="470" Y="30" BorderStyle="0" Height="10" HAlignment="0" BorderColor="0,0,0" BackgroundColor="255,255,255" FontItalic="0" VAlignment="2" ForegroundColor="0,0,0" Text="Base imponible" FontWeight="50" FontSize="9" BorderWidth="1" FontFamily="Arial" />
+ <CalculatedField CalculationType="6" FunctionName = "flcontmode.pub_mostrarSubtotales" WordWrap="0" Width="130" X="470" Y="40" BorderStyle="0" NegValueColor="0,0,0" Height="18" HAlignment="2" DataType="2" Field="E" DateFormat="11" Currency="32" BorderColor="0,0,0" BackgroundColor="230,230,230" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" CommaSeparator="44" Text="" FontWeight="50" FontSize="11" BorderWidth="1" Precision="2" FontFamily="Arial" />
+	 
+ <Label WordWrap="0" Width="230" X="200" Y="60" BorderStyle="0" Height="18" HAlignment="0" BorderColor="0,0,0" BackgroundColor="255,255,255" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" Text="Total por hojas.........................................................................................." FontWeight="75" FontSize="12" BorderWidth="1" FontFamily="Arial" />
+	 
+	 <Label WordWrap="0" Width="130" X="470" Y="50" BorderStyle="0" Height="10" HAlignment="0" BorderColor="0,0,0" BackgroundColor="255,255,255" FontItalic="0" VAlignment="2" ForegroundColor="0,0,0" Text="Base imponible" FontWeight="50" FontSize="9" BorderWidth="1" FontFamily="Arial" />
+	 <CalculatedField CalculationType="1" WordWrap="0" Width="130" X="470" Y="60" BorderStyle="0" NegValueColor="0,0,0" Height="18" HAlignment="2" DataType="2" Field="op.baseimponible" DateFormat="11" Currency="32" BorderColor="0,0,0" BackgroundColor="230,230,230" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" CommaSeparator="44" Text="" FontWeight="50" FontSize="11" BorderWidth="1" Precision="2" FontFamily="Arial" />
+ </AddOnFooter>
+
+ <DetailFooter Height="80" Level="1">
+ <Label WordWrap="0" Width="230" X="200" Y="20" BorderStyle="0" Height="18" HAlignment="0" BorderColor="0,0,0" BackgroundColor="255,255,255" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" Text="Total por hojas (A) ....................................................................................." FontWeight="75" FontSize="12" BorderWidth="1" FontFamily="Arial" />
+ 
+ <Label WordWrap="0" Width="130" X="470" Y="10" BorderStyle="0" Height="10" HAlignment="0" BorderColor="0,0,0" BackgroundColor="255,255,255" FontItalic="0" VAlignment="2" ForegroundColor="0,0,0" Text="Base imponible" FontWeight="50" FontSize="9" BorderWidth="1" FontFamily="Arial" />
+ <CalculatedField CalculationType="6" FunctionName = "flcontmode.pub_mostrarSubtotales" WordWrap="0" Width="130" X="470" Y="20" BorderStyle="0" NegValueColor="0,0,0" Height="18" HAlignment="2" DataType="2" Field="A" DateFormat="11" Currency="32" BorderColor="0,0,0" BackgroundColor="230,230,230" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" CommaSeparator="44" Text="" FontWeight="50" FontSize="11" BorderWidth="1" Precision="2" FontFamily="Arial" />
+	
+  <Label WordWrap="0" Width="230" X="200" Y="40" BorderStyle="0" Height="18" HAlignment="0" BorderColor="0,0,0" BackgroundColor="255,255,255" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" Text="Total por hojas (E) ....................................................................................." FontWeight="75" FontSize="12" BorderWidth="1" FontFamily="Arial" />
+ 
+ <Label WordWrap="0" Width="130" X="470" Y="30" BorderStyle="0" Height="10" HAlignment="0" BorderColor="0,0,0" BackgroundColor="255,255,255" FontItalic="0" VAlignment="2" ForegroundColor="0,0,0" Text="Base imponible" FontWeight="50" FontSize="9" BorderWidth="1" FontFamily="Arial" />
+ <CalculatedField CalculationType="6" FunctionName = "flcontmode.pub_mostrarSubtotales" WordWrap="0" Width="130" X="470" Y="40" BorderStyle="0" NegValueColor="0,0,0" Height="18" HAlignment="2" DataType="2" Field="E" DateFormat="11" Currency="32" BorderColor="0,0,0" BackgroundColor="230,230,230" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" CommaSeparator="44" Text="" FontWeight="50" FontSize="11" BorderWidth="1" Precision="2" FontFamily="Arial" />
+
+ <Label WordWrap="0" Width="230" X="200" Y="60" BorderStyle="0" Height="18" HAlignment="0" BorderColor="0,0,0" BackgroundColor="255,255,255" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" Text="Total por hojas.........................................................................................." FontWeight="75" FontSize="12" BorderWidth="1" FontFamily="Arial" />
+ 
+ <Label WordWrap="0" Width="130" X="470" Y="50" BorderStyle="0" Height="10" HAlignment="0" BorderColor="0,0,0" BackgroundColor="255,255,255" FontItalic="0" VAlignment="2" ForegroundColor="0,0,0" Text="Base imponible" FontWeight="50" FontSize="9" BorderWidth="1" FontFamily="Arial" />
+ <CalculatedField CalculationType="1" WordWrap="0" Width="130" X="470" Y="60" BorderStyle="0" NegValueColor="0,0,0" Height="18" HAlignment="2" DataType="2" Field="op.baseimponible" DateFormat="11" Currency="32" BorderColor="0,0,0" BackgroundColor="230,230,230" FontItalic="0" VAlignment="1" ForegroundColor="0,0,0" CommaSeparator="44" Text="" FontWeight="50" FontSize="11" BorderWidth="1" Precision="2" FontFamily="Arial" />
 </DetailFooter>
 
 </KugarTemplate>

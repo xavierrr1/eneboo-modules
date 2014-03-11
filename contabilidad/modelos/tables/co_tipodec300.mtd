@@ -9,7 +9,7 @@
 		<name>idtipodec</name>
 		<!--Tipo de declaración (usado en la presentación telemática)-->
 		<alias>QT_TRANSLATE_NOOP("MetaData","Tipo de declaración")</alias>
-		<null>true</null>
+		<null>false</null>
 		<pk>true</pk>
 		<type>string</type>
 		<length>1</length>
