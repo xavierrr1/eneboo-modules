@@ -16,7 +16,7 @@
         <null>false</null>
         <pk>false</pk>
         <type>string</type>
-        <length>40</length>
+        <length>30</length>
     </field>
     <field>
         <name>nombrepf</name>
@@ -28,15 +28,7 @@
     </field>
     <field>
         <name>apellidospf</name>
-        <alias>QT_TRANSLATE_NOOP("MetaData","Apellido1")</alias>
-        <null>true</null>
-        <pk>false</pk>
-        <type>string</type>
-        <length>30</length>
-    </field>
-    <field>
-        <name>apellidospf2</name>
-        <alias>QT_TRANSLATE_NOOP("MetaData","Apellido2")</alias>
+        <alias>QT_TRANSLATE_NOOP("MetaData","Apellidos")</alias>
         <null>true</null>
         <pk>false</pk>
         <type>string</type>
@@ -62,14 +54,6 @@
         <name>cifnif</name>
         <alias>QT_TRANSLATE_NOOP("MetaData","C.I.F./N.I.F")</alias>
         <null>false</null>
-        <pk>false</pk>
-        <type>string</type>
-        <length>9</length>
-    </field>
-    <field>
-        <name>nifreplegal</name>
-        <alias>QT_TRANSLATE_NOOP("MetaData","N.I.F Representante Legal")</alias>
-        <null>true</null>
         <pk>false</pk>
         <type>string</type>
         <length>9</length>
@@ -188,64 +172,5 @@
         <pk>false</pk>
         <type>string</type>
         <length>4</length>
-    </field>
-    <field>
-        <name>codcuentaefectivo</name>
-        <alias>QT_TRANSLATE_NOOP("MetaData","Cod. cuenta efectivo")</alias>
-        <null>true</null>
-        <pk>false</pk>
-        <type>string</type>
-        <length>6</length>
-        <relation>
-            <table>cuentasbanco</table>
-            <field>codcuenta</field>
-            <card>M1</card>
-        </relation>
-    </field>
-    <field>
-        <name>codsubcuentaivasim</name>
-        <!-- Código de la cuenta de IVA Soportado de Importaciones -->
-        <alias>QT_TRANSLATE_NOOP("MetaData","I.V.A. Soportado de Importaciones (IVASIM)")</alias>
-        <null>true</null>
-        <pk>false</pk>
-        <type>string</type>
-        <length>15</length>
-    </field>
-    <field>
-        <name>idsubcuentaivasim</name>
-        <!-- Identificador interno de la subcuenta -->
-        <alias>QT_TRANSLATE_NOOP("MetaData","ID")</alias>
-        <null>true</null>
-        <pk>false</pk>
-        <type>uint</type>
-        <visiblegrid>false</visiblegrid>
-        <relation>
-                <table>co_subcuentas</table>
-                <field>idsubcuenta</field>
-                <card>M1</card>
-        </relation>
-    </field>
-    <field>
-        <name>codsubcuentahpacre</name>
-        <!-- Código de la cuenta HP iva soportado acreedores -->
-        <alias>QT_TRANSLATE_NOOP("MetaData","H.P. Acreedora por conceptos fiscales")</alias>
-        <null>true</null>
-        <pk>false</pk>
-        <type>string</type>
-        <length>15</length>
-    </field>
-    <field>
-        <name>idsubcuentahpacre</name>
-        <!-- Identificador interno de la subcuenta -->
-        <alias>QT_TRANSLATE_NOOP("MetaData","ID")</alias>
-        <null>true</null>
-        <pk>false</pk>
-        <type>uint</type>
-        <visiblegrid>false</visiblegrid>
-        <relation>
-                <table>co_subcuentas</table>
-                <field>idsubcuenta</field>
-                <card>M1</card>
-        </relation>
     </field>
 </TMD>
