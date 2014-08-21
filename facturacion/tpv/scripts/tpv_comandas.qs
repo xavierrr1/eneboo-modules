@@ -347,12 +347,13 @@ function interna_calculateField(fN:String):String
 			break;
 		}
 		/** \C
-		El --total-- es el --neto-- más el --totaliva-- 
+		El --total-- es el --neto-- más el --totaliva-- más totalrecargo
 		*/
 		case "total": {
 			var neto:Number = parseFloat(this.iface.calculateField("neto"));
-			var totalIva:Number = parseFloat(this.iface.calculateField("totaliva")); 
-			valor = neto + totalIva;
+			var totalIva:Number = parseFloat(this.iface.calculateField("totaliva"));
+			var totalRecargo = parseFloat(cursor.valueBuffer("totalrecargo"));
+			valor = neto + totalIva + totalRecargo;
 			break;
 		}
 		/** \C
@@ -373,6 +374,11 @@ function interna_calculateField(fN:String):String
 			valor = util.roundFieldValue(valor, "tpv_comandas", "totaliva");
 			break;
 		}
+	    case "totalrecargo": {
+	      	valor = util.sqlSelect("tpv_lineascomanda", "SUM((pvptotal * recargo) / 100)", "idtpv_comanda = " + cursor.valueBuffer("idtpv_comanda"));
+	      	valor = util.roundFieldValue(valor, "tpv_comandas", "totalrecargo");
+	      	break;
+	    }
 		case "desarticulo": {
 			valor = util.sqlSelect("articulos", "descripcion", "referencia = '" + cursor.valueBuffer("referencia") + "'");
 			if (!valor)
@@ -433,6 +439,12 @@ function interna_validateForm():Boolean
 		return false;
 	}
 
+	var idComanda = cursor.valueBuffer("idtpv_comanda");
+	var codCliente = cursor.valueBuffer("codcliente");
+	if (!flfacturac.iface.pub_validarIvaRecargoCliente(codCliente, idComanda, "tpv_lineascomanda", "idtpv_comanda")) {
+		return false;
+	}
+
 	return true;
 }
 
@@ -483,6 +495,7 @@ function oficial_calcularTotales()
 {
 	this.child("fdbNeto").setValue(this.iface.calculateField("neto"));
 	this.child("fdbTotalIva").setValue(this.iface.calculateField("totaliva"));
+  	this.child("fdbTotalRecargo").setValue(this.iface.calculateField("totalrecargo"));
 	this.child("fdbTotalComanda").setValue(this.iface.calculateField("total"));
 	
 	this.iface.verificarHabilitaciones();
@@ -1200,6 +1213,7 @@ function oficial_insertarLineaClicked()
 	this.child("tdbLineasComanda").refresh();
 }
 
+
 /** |D Establece los datos de la línea de ventas a crear mediante la inserción rápida
 \end */
 function oficial_datosLineaVenta():Boolean
@@ -1212,6 +1226,7 @@ function oficial_datosLineaVenta():Boolean
 	this.iface.curLineas.setValueBuffer("pvpunitario", util.roundFieldValue(this.iface.txtPvpArticulo.text, "tpv_lineascomanda", "pvpunitario"));
 	this.iface.curLineas.setValueBuffer("codimpuesto",  this.iface.calcularIvaLinea(this.iface.curLineas.valueBuffer("referencia")));
 	this.iface.curLineas.setValueBuffer("iva", formRecordtpv_lineascomanda.iface.pub_commonCalculateField("iva", this.iface.curLineas));
+  	this.iface.curLineas.setValueBuffer("recargo", formRecordtpv_lineascomanda.iface.pub_commonCalculateField("recargo", this.iface.curLineas));
 	this.iface.curLineas.setValueBuffer("pvpsindto", formRecordtpv_lineascomanda.iface.pub_commonCalculateField("pvpsindto", this.iface.curLineas));
 	this.iface.curLineas.setValueBuffer("pvptotal", formRecordtpv_lineascomanda.iface.pub_commonCalculateField("pvptotal", this.iface.curLineas));
 
@@ -1786,11 +1801,11 @@ function oficial_pbnPagar_clicked()
 	var cursor:FLSqlCursor = this.cursor();
 	var pendiente:Number = parseFloat(cursor.valueBuffer("pendiente"));
 	if (!isNaN(pendiente) && pendiente <= 0) {
-        if (this.iface.config_["rvabrircajon"]) {
-            this.iface.abrirCajonClicked();
-        }
 		if (this.iface.config_["rvimprimirtique"]) {
 			this.iface.imprimirQuickClicked();
+		}
+		if (this.iface.config_["rvabrircajon"]) {
+			this.iface.abrirCajonClicked();
 		}
 		if (this.iface.config_["rvpasarsiguiente"]) {
 			var res:Number = MessageBox.information(util.translate("scripts", "Venta realizada.\nPulse aceptar para pasar a la siguiente"), MessageBox.Ok, MessageBox.Cancel);
