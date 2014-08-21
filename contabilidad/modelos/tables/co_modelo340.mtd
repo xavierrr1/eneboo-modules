@@ -243,5 +243,26 @@
 		<type>string</type>
 		<length>16</length>
 	</field>
+        
+        <field>
+                <name>importeminimoefectivo</name>
+                <!--Importe mínimo en para incluir un determinado cliente en la relación del modelo con cobros en efectivo-->
+                <alias>QT_TRANSLATE_NOOP("MetaData","Importe mínimo Efectivo")</alias>
+                <null>false</null>
+                <pk>false</pk>
+                <type>double</type>
+                <partI>13</partI>
+                <partD>2</partD>
+                <default>6000</default>
+        </field>
+        
+        <field>
+                <name>idmodeloant</name>
+                <!--Identificador de la presentación anterior para comparar importes en metalico-->
+                <alias>QT_TRANSLATE_NOOP("MetaData","Presentación Anterior")</alias>
+                <null>true</null>
+                <pk>false</pk>
+                <type>uint</type>
+        </field>
 	
 </TMD>

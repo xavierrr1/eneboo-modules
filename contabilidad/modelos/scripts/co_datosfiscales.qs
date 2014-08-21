@@ -79,16 +79,38 @@ class modelo390 extends baseModelos {
 //// MODELO 390 /////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 
+/** @class_declaration modelo031 */
+/////////////////////////////////////////////////////////////////
+//// MODELO 031 /////////////////////////////////////////////////
+class modelo031 extends modelo390 {
+    function modelo031( context ) { modelo390 ( context ); }
+    var posActualPuntoSubSim:Number;
+    var posActualPuntoSubHp:Number;
+    var longSubcuenta:Number;
+    var bloqueoSubcuenta:Boolean;
+    function init() {
+        return this.ctx.modelo031_init();
+    }
+    function validateForm():Boolean {
+        return this.ctx.modelo031_validateForm();
+    }
+    function bufferChanged(fN:String) {
+        return this.ctx.modelo031_bufferChanged(fN);
+    }
+}
+//// MODELO 031 /////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+
 /** @class_declaration head */
 /////////////////////////////////////////////////////////////////
 //// DESARROLLO /////////////////////////////////////////////////
-class head extends modelo390 {
-    function head( context ) { modelo390 ( context ); }
+class head extends modelo031 {
+    function head( context ) { modelo031 ( context ); }
 }
 //// DESARROLLO /////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 
-/** @class_declaration ifaceCtx */
+/** @class_declaration ifaceCtx*/
 /////////////////////////////////////////////////////////////////
 //// INTERFACE  /////////////////////////////////////////////////
 class ifaceCtx extends head {
@@ -285,6 +307,74 @@ function modelo390_bufferChanged(fN:String)
 }
 
 //// MODELO 390 /////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+
+/** @class_definition modelo031 */
+/////////////////////////////////////////////////////////////////
+//// MODELO031 /////////////////////////////////////////////////
+function modelo031_init()
+{
+    this.iface.__init();
+    
+    var util:FLUtil = new FLUtil();
+    var cursor:FLSqlCursor = this.cursor();
+
+    var ejercicioActual:String = flfactppal.iface.pub_ejercicioActual();
+    this.child("fdbIdSubcuentaIVASIM").setFilter("codejercicio = '" + ejercicioActual + "'");
+    this.child("fdbIdSubcuentaHPAcre").setFilter("codejercicio = '" + ejercicioActual + "'");
+
+    if (sys.isLoadedModule("flcontppal")) {
+        this.iface.longSubcuenta = util.sqlSelect("ejercicios", "longsubcuenta",  "codejercicio = '" + ejercicioActual + "'");
+        this.iface.posActualPuntoSubSim = -1;
+        this.iface.posActualPuntoSubHp = -1;
+        this.iface.bloqueoSubcuenta = false;
+    }
+}
+
+function modelo031_validateForm() {
+    
+    if(!this.iface.__validaForm()){
+        return false;
+    }
+    
+    if (!formRecordimpuestos.iface.comprobarSubcuentaIVA(cursor.valueBuffer("codsubcuentaivasim"), "IVASIM")) {
+        return false;
+    }
+    
+    if (!formRecordimpuestos.iface.comprobarSubcuentaIVA(cursor.valueBuffer("codsubcuentahpacre"), "IVAACR")) {
+        return false;
+    }
+    
+    return true;
+}
+
+function modelo031_bufferChanged(fN) {
+    
+    var cursor:FLSqlCursor = this.cursor();
+    switch(fN) {
+    /*U Al introducir un código de subcuenta, si el usuario pulsa la tecla del punto '.', la subcuenta se informa automaticamente con el código de cuenta más tantos ceros como sea necesario para completar la longitud de subcuenta asociada al ejercicio actual.
+    \end */
+    case "codsubcuentaivasim":
+        if (!this.iface.bloqueoSubcuenta) {
+            this.iface.bloqueoSubcuenta = true;
+            this.iface.posActualPuntoSubSim = flcontppal.iface.pub_formatearCodSubcta(this, "fdbCodSubcuentaIVASIM", this.iface.longSubcuenta, this.iface.posActualPuntoSubSim);
+            this.iface.bloqueoSubcuenta = false;
+        }
+        break;
+    
+    case "codsubcuentahpacre":
+        if (!this.iface.bloqueoSubcuenta) {
+            this.iface.bloqueoSubcuenta = true;
+            this.iface.posActualPuntoSubHp = flcontppal.iface.pub_formatearCodSubcta(this, "fdbCodSubcuentaHPAcre", this.iface.longSubcuenta, this.iface.posActualPuntoSubHp);
+            this.iface.bloqueoSubcuenta = false;
+        }
+        break;
+    
+    default:
+        this.iface.__bufferChanged(fN);
+    }
+}
+//// MODELO031 /////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
 /** @class_definition head */

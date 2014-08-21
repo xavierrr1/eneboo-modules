@@ -1,0 +1,39 @@
+<ACTIONS>
+	<action>
+		<name>co_tiposvia</name>
+		<description>QT_TRANSLATE_NOOP("MetaData","Esta tabla almacena los distintos tipos de vía urbana (Calle, avenida, etc.")</description>
+		<alias>QT_TRANSLATE_NOOP("MetaData","Tipos de vía urbana")</alias>
+		<table>co_tiposvia</table>
+		<form>master</form>
+	</action>
+	
+	<action>
+		<name>co_datosfiscales</name>
+		<alias>QT_TRANSLATE_NOOP("MetaData","Datos Fiscales")</alias>
+		<description>QT_TRANSLATE_NOOP("MetaData","Datos fiscales de la empresa")</description>
+		<scriptform>co_datosfiscales</scriptform>
+		<scriptformrecord>co_datosfiscales</scriptformrecord>
+		<table>co_datosfiscales</table>
+		<form>co_datosfiscales</form>
+		<formrecord>co_datosfiscales</formrecord>
+	</action>
+	
+	<action>
+		<name>co_inmueble</name>
+		<alias>QT_TRANSLATE_NOOP(&quot;MetaData&quot;,&quot;Inmuebles&quot;)</alias>
+		<description>QT_TRANSLATE_NOOP(&quot;MetaData&quot;,&quot;&quot;)</description>
+		<table>co_inmueble</table>
+		<form>master</form>
+		<formrecord>co_inmueble</formrecord>
+	</action>
+
+	<action>
+		<name>co_situinmueble340</name>
+		<description>Situación de inmueble</description>
+		<alias>QT_TRANSLATE_NOOP(&quot;MetaData&quot;,&quot;Situación de inmueble&quot;)</alias>
+		<table>co_situinmueble340</table>
+		<form>master</form>
+		<formrecord>co_situinmueble340</formrecord>
+	</action>
+	
+</ACTIONS>

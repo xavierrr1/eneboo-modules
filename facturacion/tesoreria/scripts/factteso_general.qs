@@ -60,7 +60,7 @@ class head extends oficial {
 //// DESARROLLO /////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 
-/** @class_declaration ifaceCtx */
+/** @class_declaration ifaceCtx*/
 /////////////////////////////////////////////////////////////////
 //// INTERFACE  /////////////////////////////////////////////////
 class ifaceCtx extends head {
@@ -156,19 +156,19 @@ function oficial_bufferChanged(fN:String)
 
 function oficial_tbnCalcularDatosCuenta_clicked()
 {
-    var util:FLUtil;
     var _i = this.iface;
     
-    var res = MessageBox.information(util.translate("scripts", "Se van a calcular los dígitos de control, los códigos de cuenta, y el IBAN de todas las cuentas de empresa, clientes, y proveedores.\n¿Quieres continuar?\n\nNota: si el código de país en la cuenta está vacío, se supondrá que es de España.\nSi tiene cuentas de otros países debe revisarlas antes e informar su correspondiente código de país"), MessageBox.Yes, MessageBox.No);
+    var res = MessageBox.information(sys.translate("Se van a calcular los dígitos de control, los códigos de cuenta, y el IBAN de todas las cuentas de empresa, clientes, y proveedores.\n¿Quieres continuar?\n\nNota: si el código de país en la cuenta está vacío, se supondrá que es de España.\nSi tiene cuentas de otros países debe revisarlas antes e informar su correspondiente código de país"), MessageBox.Yes, MessageBox.No);
     if (res != MessageBox.Yes) {
         return;
     }
     
-    var codigoES = util.sqlSelect("paises","codpais","codpais = 'ES' AND codiso = 'ES'");
+
+    var codigoES = AQUtil.sqlSelect("paises","codpais","codpais = 'ES' AND codiso = 'ES'");
     var paisES;
         
     if(!codigoES || codigoES == "") {
-        paisES = util.sqlSelect("paises","codpais","codiso = 'ES' ORDER BY codpais");
+        paisES = AQUtil.sqlSelect("paises","codpais","codiso = 'ES' ORDER BY codpais");
         
         if(!paisES || paisES == "") {
             MessageBox.information(sys.translate("Lo siento, necesita tener un país con código ISO 'ES'."), MessageBox.Ok, MessageBox.NoButton);
@@ -183,9 +183,15 @@ function oficial_tbnCalcularDatosCuenta_clicked()
     var aTablasError = ["Cta. Empresa", "Cta. Cliente", "Cta. Proveedor"];
     var nombresTabla = [sys.translate("cuentas de empresa"), sys.translate("cuentas de clientes"), sys.translate("cuentas de proveedores")];
     
+<<<<<<< HEAD
     var aErrorCta:Array = [];
     var aErrorDesc:Array = [];
     var aErrorTab:Array = [];
+=======
+    var aErrorCta = [];
+    var aErrorDesc = [];
+    var aErrorTab = [];
+>>>>>>> c8c9b02211e5017f6431d66f7b35969b1617c7ef
     
     for(var i = 0; i < aTablas.length; i++) {
         var paso = 0;
@@ -193,21 +199,20 @@ function oficial_tbnCalcularDatosCuenta_clicked()
         var curCuentas = new FLSqlCursor(aTablas[i]);
         curCuentas.select();
         
-        var codCuenta = curCuentas.valueBuffer("codcuenta");
         var totalPasos = curCuentas.size();
         
         if(totalPasos == 0) {
             continue;
         }
         
-        var nombresTabla = [util.translate("scripts", "cuentas de empresa"), util.translate("scripts", "cuentas de empresa"), util.translate("scripts", "cuentas de empresa")];
-        
-        //AQUtil.createProgressDialog(sys.translate("Calculando datos de IBAN en las %1...").arg(nombresTabla[i]), totalPasos);
-        util.createProgressDialog(util.translate("scripts", "Calculando datos de IBAN en las %1...").arg(nombresTabla[i]), totalPasos);
-        util.setProgress(0);
+        AQUtil.createProgressDialog(sys.translate("Calculando datos de IBAN en las %1...").arg(nombresTabla[i]), totalPasos);
         
         while(curCuentas.next()) {
+<<<<<<< HEAD
             util.setProgress(++paso);
+=======
+            AQUtil.setProgress(++paso);
+>>>>>>> c8c9b02211e5017f6431d66f7b35969b1617c7ef
             curCuentas.setModeAccess(curCuentas.Edit);
             curCuentas.refreshBuffer();
             
@@ -215,7 +220,11 @@ function oficial_tbnCalcularDatosCuenta_clicked()
             var desc = curCuentas.valueBuffer("descripcion");
             var codPais = curCuentas.valueBuffer("codpais");
         
+<<<<<<< HEAD
             if (curCuentas.isNull("codpais") || (codPais == "ES" && paisES && paisES != "") || util.sqlSelect("paises", "codiso", "codpais = '" + curCuentas.valueBuffer("codpais") + "'") == "ES") {
+=======
+            if (curCuentas.isNull("codpais") || (codPais == "ES" && paisES && paisES != "") || AQUtil.sqlSelect("paises", "codiso", "codpais = '" + curCuentas.valueBuffer("codpais") + "'") == "ES") {
+>>>>>>> c8c9b02211e5017f6431d66f7b35969b1617c7ef
                 if (curCuentas.isNull("codpais") || (codPais == "ES" && paisES && paisES != "")) {
                     curCuentas.setValueBuffer("codpais", paisES);
                 }
@@ -236,6 +245,7 @@ function oficial_tbnCalcularDatosCuenta_clicked()
                     aErrorDesc.push(desc);
                     aErrorTab.push(aTablasError[i]);
                     continue;
+<<<<<<< HEAD
                 }
                 
                 if(isNaN(parseFloat(entidad)) || isNaN(parseFloat(entidad)) || isNaN(parseFloat(entidad))) {
@@ -245,6 +255,17 @@ function oficial_tbnCalcularDatosCuenta_clicked()
                     continue;
                 }
                 
+=======
+                }
+                
+                if(isNaN(parseFloat(entidad)) || isNaN(parseFloat(entidad)) || isNaN(parseFloat(entidad))) {
+                    aErrorCta.push(codCuenta);
+                    aErrorDesc.push(desc);
+                    aErrorTab.push(aTablasError[i]);
+                    continue;
+                }
+                
+>>>>>>> c8c9b02211e5017f6431d66f7b35969b1617c7ef
                 curCuentas.setValueBuffer("ctadc", formRecordcuentasbanco.iface.pub_commonCalculateField("ctadc", curCuentas));
                 curCuentas.setValueBuffer("codigocuenta", formRecordcuentasbanco.iface.pub_commonCalculateField("codigocuenta_es", curCuentas));
             }
@@ -253,17 +274,17 @@ function oficial_tbnCalcularDatosCuenta_clicked()
             
             
             if (!curCuentas.commitBuffer()) {
+<<<<<<< HEAD
                 MessageBox.information(util.translate("scripts", "Error en el cálculo de los datos de la cuenta %1 en %2").arg(codCuenta).arg(nombresTabla[i]), MessageBox.Ok, MessageBox.NoButton);
+=======
+                AQUtil.destroyProgressDialog();
+                MessageBox.information(sys.translate("Error en el cálculo de los datos de la cuenta %1 en %2"), MessageBox.Ok, MessageBox.NoButton);
+>>>>>>> c8c9b02211e5017f6431d66f7b35969b1617c7ef
                 return;
-            }
-            
-            //AQUtil.setProgress(++paso);
-            util.setProgress(++paso);
-            
+            }           
         } 
         
-        //AQUtil.destroyProgressDialog();
-        util.destroyProgressDialog();
+        AQUtil.destroyProgressDialog();
     }
     
     if(aErrorCta.length == 0) {

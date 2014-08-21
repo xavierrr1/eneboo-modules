@@ -1,0 +1,174 @@
+<!DOCTYPE UI>
+<UI stdsetdef="1" version="3.3" >
+    <class>FLWidgetApplication</class>
+    <comment>Ventana principal MDI de la aplicacion</comment>
+    <widget class="QMainWindow" >
+        <property name="name" >
+            <cstring>FLWidgetApplication</cstring>
+        </property>
+        <property name="geometry" >
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>532</width>
+                <height>469</height>
+            </rect>
+        </property>
+        <property name="font" >
+            <font>
+                <family>Helvetica [Urw]</family>
+            </font>
+        </property>
+        <property name="caption" >
+            <string>FacturaLUX - Facturación</string>
+        </property>
+        <property name="icon" >
+            <pixmap>image50404</pixmap>
+        </property>
+        <property name="toolTip" stdset="0" >
+            <string/>
+        </property>
+        <property name="whatsThis" stdset="0" >
+            <string>FacturaLUX software ERP</string>
+        </property>
+    </widget>
+    <menubar>
+        <property name="name" >
+            <cstring>menubar</cstring>
+        </property>
+        <property name="geometry" >
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>532</width>
+                <height>23</height>
+            </rect>
+        </property>
+        <property name="acceptDrops" >
+            <bool>false</bool>
+        </property>
+        <property name="frameShape" >
+            <enum>MenuBarPanel</enum>
+        </property>
+        <property name="defaultUp" >
+            <bool>false</bool>
+        </property>
+        <item name="Principal" text="Principal" >
+            <action name="co_datosfiscales" />
+            <action name="co_inmueble" />
+            <action name="co_tiposvia" />
+        </item>
+        <item name="&amp;Modelos" text="&amp;Modelos" />
+    </menubar>
+    <toolbars>
+        <toolbar dock="2" >
+            <property name="name" >
+                <cstring>toolBar</cstring>
+            </property>
+            <property name="geometry" >
+                <rect>
+                    <x>0</x>
+                    <y>0</y>
+                    <width>46</width>
+                    <height>29</height>
+                </rect>
+            </property>
+            <property name="acceptDrops" >
+                <bool>true</bool>
+            </property>
+            <property name="frameShape" >
+                <enum>ToolBarPanel</enum>
+            </property>
+            <property name="label" >
+                <string>Herramientas</string>
+            </property>
+            <action name="co_datosfiscales" />
+        </toolbar>
+    </toolbars>
+    <actions>
+        <action>
+            <property name="name" >
+                <cstring>co_datosfiscales</cstring>
+            </property>
+            <property name="iconSet" >
+                <iconset>image663</iconset>
+            </property>
+            <property name="text" >
+                <string>Configuración</string>
+            </property>
+            <property name="menuText" >
+                <string>&amp;Configuración</string>
+            </property>
+        </action>
+        <action>
+            <property name="name" >
+                <cstring>co_inmueble</cstring>
+            </property>
+            <property name="iconSet" >
+                <iconset>base_modelosimage55850</iconset>
+            </property>
+            <property name="text" >
+                <string>Inmuebles</string>
+            </property>
+            <property name="menuText" >
+                <string>&amp;Inmuebles</string>
+            </property>
+        </action>
+        <action>
+            <property name="name" >
+                <cstring>co_tiposvia</cstring>
+            </property>
+            <property name="text" >
+                <string>Tipos de vía</string>
+            </property>
+            <property name="menuText" >
+                <string>Tipos de &amp;vía</string>
+            </property>
+        </action>
+    </actions>
+    <images>
+        <image name="base_modelosimage55850" >
+            <data format="PNG" length="1561" >89504e470d0a1a0a0000000d4948445200000020000000200806000000737a7af4000005e049444154789ce596496c9c4516c7ffafaabeaaaeafdbe97612e236de1a42360788133a61924c088b5142020272e030238db84138620e338a41731ac1850bcb6824348868260246b31c410aabc008592c02020a041212864836f112b7ddcb570b87afed71a7bf0ed8973950521dba5fbdf7ffbdf7aa5e37f07f5eb45cc73d0357c13a2f19113186eadb1f9d5e561cb61ca7bddbd6c27b68adc47020f89f6a915bb17b4b6159004baec0cd37ac85b54e2b298e10f088b18ed78c7db65c35c3b95c6e66dda6eb44b53cbbde391b0200113921c429ef71f1afc7fed3144f2c45fc96e235b0d669ad8223001ea91aaf22e33d3c0e7346387ffefc91d5f99ed4f7df9f7b2eaad5fa41708cf16a3a4cffc67bf74652cc9f0d70dbf67530c66aad8261220c458ed4151d790f22fcf7bbb3c27b733808a453017f6affad7b33ded9acb506d6984a643d0780d7def9707900833bd6c118a7432d87010c459654beb31bc581cdc439f7a31f497c71f2a4f0de3cf4d5975fae7cf0f043b22d1da25a9e43b93ce726a72e5ac618f0f40b4db1f94f89df7ee37a581b8b33a221e348ade9ecc6f6816bd1b17a25429da255ed3954228bf10b93bc542a5d67ac6ddf7a4391859936302e8c7138a652facc0b7f7f716900fb7eb501c63a9dd66a98311a8a6c5d7cebb558b3ba1d440422824e295ad59ea39a7118fbe1029d387182556b11158bdba1436d6a913da654eacc73cf1f6dd268d982fd3b3720324ea7b51c268ac5f3ddbdd8b16dcb82f8e295cf6bdcb42b051e04787ff443bcf8d24b20c6f0e0030f209bcd12e013751201eed8b51191b13aa365fdc271d555588b5d3b8ae858b32a16bf341e013abd8206c30c8240e1ad774670f4e8df50a9d63078fb2039eb12019ae6c081dd9b16c4010c192f54f7d51bb167f74ee4d75cd19479d21abf3081d7de7c17af1e7f1d9353d39e0bf1ccc4d4ccef55c067ab916d38db7007eefc753f8c753a13aa4719a3218b4015366cc1e0adb7a1b7a70752a51048f5933b9bcba1bbab0b9c739c397b8e2627a706000a23eb4600d41201eedad38fc858dd168b3f6c49aab5fd45ecdbb71f7d7dbd3f5b3c900ab20ed1d3d30321027ffacc397171a6540410026880e00070f74d9be13cc28c568f71460f5ba6d4faeb6fc41d070ea250e885940a22904bda524a64b359f4f5f69094d29ffef6ac28954a4500e9c5101c00365f9d0763d4c739fb230ff4cacdc5bdfcc0c18354e8eb8194124208044bdc5c08043240369b45a1af8fc250fbaf4e9d8a4aa5d90e00af00185f00e8ed6cc70fd3731370d1e8d69d7bdd5df71cda7e55a14052061082430462c93b08ea1041806c2e8beeae2b09b6f6fcc8fb1f3c0ae093f916080078f5bd9300808f478e8f9efae6eb6d2bdbdb49871aaddeeed2172197cba2b8f5fad31f8f1c1f1dd835b860699a0344cc31cebc528a5afd5873c641acd1e89c877336d9c11318e32022f2be31a906008ff8f79b8881710196f077c57b8f4f3ffb1c6363e30b33c17b8fcece3cfa376d44d298701ef363bbc99a34095dcc923c71ac7578fc8927f18f7ffe1b42c4eec618dcffbbdfe22f7f7eeab2832ac9d400e0bc07886ccbd320801cacb530c600de010418e3609dabfb2403c496e6a00d45f6de8300377f1cc42ed9048041a90099b4425b46a32dadd1964e41c9a0850ffb1f18c5d7eabe43fb932be0e30ac42d68950d11524aa22dad175ae09d434ac97a3e976d019352367cd7dc02c02d266e788944001cd422002260850e106a15db9b7c00f8f9ec89b4d69701701e003978f8d8932524c4905201da321a9cd72fa1b31082a3b58f5fa840783900ef7dfd191288f1e48bc83c9492c8a435048f45ad35905202acdef34b16310f220622c632994c6b80999912ca958a9b9abe88d4c464e293b2d68211e20a300e10e0ac03c163e2c214186bf6f1de636a7a1a73e50aab45a6116ef187fb0edd0922bab75ca9bc4cc404259cf4de836c19a18a4b3d7f66aeeae1986e31073cac3108047f7c6c6cfc0f577675e0e57fbdd25c815a751644ec73539d7dcc59dbd8cc45008c116324178c4440b556f3d696e3f625201023c659f8aea04a82f597bc7e04649f198779c8813a0000000049454e44ae426082</data>
+        </image>
+        <image name="image50404" >
+            <data format="PNG" length="1000" >89504e470d0a1a0a0000000d4948445200000020000000200806000000737a7af4000003af49444154789c95573d6b1b41101d02f9012ef30f52a472275771aa90d29dd5399d0d2e8c5165bb3042853fd2c98104296088d244b8920918ac22e12e60b00ac339e0c0c9d8e1641490c0c5156a5e8addd9bb9ddbb51c35a3d3cd9ce6bd7d6f768f000023c01583302000841064ddbf47fec3f749e77bf3c4f3280803a2d148658f86764cef53ab881f2ef3c57de27fe3bc24499c791c55c1505771e4ce6d648454e4b99922532f9990cf0b9163208e8143203e69e71164b40a641cd3f461a6349326ba19d09d9ebfdb505f748c9a7bea7a695e45dd1c0eebea6107d57c6f728d8bda524cb83510ecac03cb6f10b51a40a58cced23c5029039314585b40d2ed00004ed7cac0f20292ab48e52d969cc80a9af13066779a68263e68e4b51575bdad228e1aaa89d50575cd0c8c8ac800102682018e932cffc9f8ef986886e8787793e81951f8a549b3d7bfa8fbe980e8fa8ebabb9b347b7747e1c77da21f5dea7d6dd1abe725ea7d3b26fad3a7eefb7da219a2feef3ea84418dc0e30579ac3e076007a4ad4eff7896688c6e371169f12853f43a21269066e54638da642880b30adea4ba83bd779ed23a585e8320200ac2f2b4d542baabedd82755d7043ce3d9906f49f05dfcf558efe3d62e1a90f056791951f5fc65859049238c1ca2250df515a29bfdc43b562b451d4827685a581ea56c746de53213a334c10006cec9c5a48ea355557dfee64485f0038d34db39599811c138681f39e42de685a7300c189698a0050741159f97b5b6dac2f01d5d5cfc02af0f6751da8e9666ab921a50529e782ed8258c744743ab19090f1b39e88eda68a9d966a0a5dcd5ca8f378423ae602c935917bc294595ec8cb69ca992ff3dcbb979ce5431b89dc784cbebd9714f3e5841c02c41dc9ce0c2323ce560f95c8e49a72f4e5f30d5b03dcb9f67941033abaf673ab7ef4a8fc6c42de3f80c0303274cf70894832e9394f98686b80914b0dc8b575af69764ef068c1cb5c7e0e9813cc8d8d5cfa77daae67984c1fcc3775aa131f8244c4dc2ee64096cd11c9a88f390024114b041ca7f83b9b74a93d4fb426bc5ab019f0b941ece38f76436ad7b9cf84435b0306b9700333a53fde35955ae2f87fa762f709264334cd0d13113da7e7200c88e49a73916f4f98e2ef0263c24d1e06985d5e7bf97e205ce29d70ec8689a8e7e739346418907ee7cee338b618d0bf7b55cdf55c2726a9e7bd40aa9d3b966b6a33e27783d48c7497ebbda0e063f16e27d774da848baf62abceb74bda6735a9059f0b7ce703768374813c5f20ab27b946c605c2cf520b5319d0f9052d883de51f010dc18061407ba40000000049454e44ae426082</data>
+        </image>
+        <image name="image663" >
+            <data format="PNG" length="1044" >89504e470d0a1a0a0000000d4948445200000016000000160806000000c4b46c3b000003db49444154789c9dd46d4c93571407f0ffd3174a19a55d49a4f445055d4c60a51d191933ccd10d664696b904315b36951010976dc8faa2365984c437a2b86503362531a568624c083611b005a2a87c98034d10191a1da06456d61760a5cb789efb3c771fa61931535bcea7fbe1e49773ce3df732883f18bbdd662e2e2eae494a4acae7053e2112f9f35e28143ceb72b94f5f1eb8c22ec3045357b7afc2ffc8cff23ca1f3f3f374726a925ebf314c3bcf750836c7d74d002471abef1459d65cf0f6fc150806e8e2df8b7421ba401b1a0ef37979afdf954aa5df0178038018f1ea8a97923729950a39cff3e0080b8661d0e3f59e1a1a1a76020800204f724571b862d5cbaa372726a6402905c771203c0fad46330ee0d152345e589e959595373efe2b08e1400801e108b66edb5ab46af52ae9d244abbd56298e557d6b43c1ab2525258e6030c4c813e5d06ab5e07982c42479a652a9589f6dcc1aa8a9a95953bdb3fac0ececdcc1582b660a0b0b3fd06ab58c4ea743e7390f0e1f69042104893219f47ac3bb8932f9ed75afac1bd6a66b2bae5eb93a1b2b2c331a8da5f77e9b44a7a70be6dc5c7479bdb8393a0a50c06030203939592e9549999faf5d23bdbd7d67628199fafaba32b3c99c63cccec6ef7e3fc4221132333270b6a303822040a552816118dcb97d873af7387d82209c79d1ba312d2dcd9fe4e7e79f98999981d168c4fb1b8bd1e3f562b55e07b3290709b2040402330887c2dca7f59f75b32ceb0430c33c4bcc3119c536abf51bb13461df2977bb686e7e0e478f1c855eafc383e90742eb89d6a8ffa13f4481e9c1c1c11142c810001f803f00d0ffadb87a679562c3db85ae5ba3b74a7d3e1f52d5a93018564293ae115a5a7efca5a9a9e93ccbb2d7014c0208025800c001a0cfecdd66b7ae75b7bb46367df42135ac345093d9442d160bede9e91676d5eeea009089c7cff6b9335c7a76ecb66dccc8cc38ed6e6b4f9d9aba0f89548214450acacbb74310e865e75e6705808917a1c07f7f85d46aabb5a953d5fb8f1f6f95040321884422f08487e93513d46af5ddaaca1d8ec7adc714128d264df6e5579f37af48d3548e8d8d2145a100bbc8221a8d42afd7e3bda2e290dde6d80de0069e37c3a742647358f7105ed8d2e672ef0d87c39bb77c5c36ad52a9a0d3e9505ebe6df158e3b707c3e1f005007cac2800c0e53e395a50b0be0f800a00d378ace18b1dd555f487e6ef798ba5b01980322ef049c5b2045944939e9e06200d807891e356e4e69ae9c5fe7ecfa54b038700cc2f07964422919fcaca4a5d0683fe242362eea72814a5fdfd17bb3d9ef376000f978302ffae9be8c0a1fddb398ead8c46a3cccd91d1ae5e5f5f1b003fe2b8aca7e31f0d858c2fb71c099c0000000049454e44ae426082</data>
+        </image>
+    </images>
+    <connections>
+        <connection>
+            <sender>co_datosfiscales</sender>
+            <signal>activated()</signal>
+            <receiver>FLWidgetApplication</receiver>
+            <slot>execDefaultScript()</slot>
+        </connection>
+        <connection>
+            <sender>co_inmueble</sender>
+            <signal>activated()</signal>
+            <receiver>FLWidgetApplication</receiver>
+            <slot>openDefaultForm()</slot>
+        </connection>
+        <connection>
+            <sender>co_tiposvia</sender>
+            <signal>activated()</signal>
+            <receiver>FLWidgetApplication</receiver>
+            <slot>openDefaultForm()</slot>
+        </connection>
+    </connections>
+    <slots>
+        <slot>chooseFont()</slot>
+        <slot access="protected" >destroy()</slot>
+        <slot>generalExit()</slot>
+        <slot>helpAbout()</slot>
+        <slot>helpIndex()</slot>
+        <slot access="protected" >init()</slot>
+        <slot>openDefaultForm()</slot>
+        <slot>toggleStatusBar(bool)</slot>
+        <slot>toggleToolBar(bool)</slot>
+        <slot>windowClose()</slot>
+        <slot>execDefaultScript()</slot>
+    </slots>
+    <layoutdefaults spacing="6" margin="11" />
+</UI>

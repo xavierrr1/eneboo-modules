@@ -96,7 +96,7 @@
 	<field>
 		<name>fechacaducidad</name>
 		<alias>QT_TRANSLATE_NOOP("MetaData","Fecha Caducidad")</alias>
-		<null>false</null>
+		<null>true</null>
 		<pk>false</pk>
 		<type>date</type>
 	</field>

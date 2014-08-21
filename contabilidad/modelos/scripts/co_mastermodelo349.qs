@@ -18,7 +18,6 @@
 //// DECLARACION ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-/** @class_declaration interna */
 //////////////////////////////////////////////////////////////////
 //// INTERNA /////////////////////////////////////////////////////
 class interna {
@@ -29,7 +28,6 @@ class interna {
 //// INTERNA /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-/** @class_declaration oficial */
 //////////////////////////////////////////////////////////////////
 //// OFICIAL /////////////////////////////////////////////////////
 class oficial extends interna {
@@ -53,16 +51,44 @@ class oficial extends interna {
 //// OFICIAL /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-/** @class_declaration head */
+/** @class_declaration boe2011 */
+//////////////////////////////////////////////////////////////////
+//// BOE2011 /////////////////////////////////////////////////////
+class boe2011 extends oficial {
+    function boe2011( context ) { oficial( context ); }
+    function presTelematica() {
+        return this.ctx.boe2011_presTelematica();
+    }
+    function presTelematica2011() {
+        return this.ctx.boe2011_presTelematica2011();
+    }
+    function nombreFichero():String {
+        return this.ctx.boe2011_nombreFichero();
+    }
+    function soporteModelo():String{
+        return this.ctx.boe2011_soporteModelo();
+    }
+    function tiporeg1(curMod:FLSlqCursor):String {
+        return this.ctx.boe2011_tiporeg1(curMod);
+    }
+    function tiporeg2(curMod:FLSlqCursor,curMod2:FlsqlCursor):String {
+        return this.ctx.boe2011_tiporeg2(curMod,curMod2);
+    }
+    function tiporeg2r(curMod:FLSlqCursor,curMod2r:FlsqlCursor):String {
+        return this.ctx.boe2011_tiporeg2r(curMod,curMod2r);
+    }
+}
+//// BOE2011 /////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 /////////////////////////////////////////////////////////////////
 //// DESARROLLO /////////////////////////////////////////////////
-class head extends oficial {
-	function head( context ) { oficial ( context ); }
+class head extends boe2011 {
+	function head( context ) { boe2011 ( context ); }
 }
 //// DESARROLLO /////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 
-/** @class_declaration ifaceCtx */
 /////////////////////////////////////////////////////////////////
 //// INTERFACE  /////////////////////////////////////////////////
 class ifaceCtx extends head {
@@ -77,7 +103,6 @@ const iface = new ifaceCtx( this );
 //// DEFINICION ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-/** @class_definition interna */
 //////////////////////////////////////////////////////////////////
 //// INTERNA /////////////////////////////////////////////////////
 function interna_init()
@@ -88,7 +113,6 @@ function interna_init()
 //// INTERNA /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 
-/** @class_definition oficial */
 //////////////////////////////////////////////////////////////////
 //// OFICIAL /////////////////////////////////////////////////////
 /** \D Lanza el informe asociado al modelo 300 seleccionado
@@ -150,17 +174,17 @@ function oficial_presTelematica()
 	var ejercicio:String;
 	var temp:String = util.sqlSelect("ejercicios", "fechainicio", "codejercicio = '" + cursor.valueBuffer("codejercicio") + "'");
 	ejercicio = temp.toString().left(4);
-	switch (ejercicio) {
-		case "2010": {
-			this.iface.presTelematica2010();
-			break;
-		}
-		case "2009": {
-			this.iface.presTelematica2009();
-			break;
-		}
-		default: {
-			this.iface.presTelematica2000();
+	if(parseInt(ejercicio) < 2009)
+		this.iface.presTelematica2000();
+	else {
+		switch (ejercicio) {
+			case "2009": {
+				this.iface.presTelematica2009();
+				break;
+			}
+			default: {
+				this.iface.presTelematica2010();
+			}
 		}
 	}
 }
@@ -283,7 +307,7 @@ debug(temp);
 	
 	// Importe de las operaciones intracomunitarias
 	temp = cursor.valueBuffer("importetotaloi");
-	file.write(flcontmode.iface.pub_formatoNumero(parseFloat(temp), 13, 2)); 
+	file.write(flcontmode.iface.pub_formatoNumeroAbs(parseFloat(temp), 13, 2)); 
 	
 	// Número total de operadores intracomunitarios con rectificaciones
 	temp = parseFloat(cursor.valueBuffer("numtotaloirec"));
@@ -295,7 +319,7 @@ debug(temp);
 	
 	// Importe de las rectificaciones
 	temp = cursor.valueBuffer("importetotaloirec");
-	file.write(flcontmode.iface.pub_formatoNumero(parseFloat(temp), 13, 2)); 
+	file.write(flcontmode.iface.pub_formatoNumeroAbs(parseFloat(temp), 13, 2)); 
 	
 	// Relleno hasta 250
 	file.write(flfactppal.iface.pub_espaciosDerecha("", 65));
@@ -359,7 +383,7 @@ debug(temp);
 		
 		// Importe de las rectificaciones
 		temp = qryMod349Tipo2.value("baseimponible");
-		file.write(flcontmode.iface.pub_formatoNumero(parseFloat(temp), 11, 2)); 
+		file.write(flcontmode.iface.pub_formatoNumeroAbs(parseFloat(temp), 11, 2)); 
 	
 		// Relleno hasta 250
 		file.write(flfactppal.iface.pub_espaciosDerecha("", 104));
@@ -437,11 +461,11 @@ debug(temp);
 		
 		// Base imponible rectificada
 		temp = qryMod349Tipo2.value("birectificada");
-		file.write(flcontmode.iface.pub_formatoNumero(parseFloat(temp), 11, 2)); 
+		file.write(flcontmode.iface.pub_formatoNumeroAbs(parseFloat(temp), 11, 2)); 
 	
 		// Base imponible declarada anteriormente
 		temp = qryMod349Tipo2.value("bianterior");
-		file.write(flcontmode.iface.pub_formatoNumero(parseFloat(temp), 11, 2)); 
+		file.write(flcontmode.iface.pub_formatoNumeroAbs(parseFloat(temp), 11, 2)); 
 	
 		// Relleno hasta 250
 		file.write(flfactppal.iface.pub_espaciosDerecha("", 72));
@@ -598,7 +622,7 @@ debug(temp);
 	
 	/// Importe de las operaciones intracomunitarias 147 - 161 (15)
 	temp = cursor.valueBuffer("importetotaloi");
-	file.write(flcontmode.iface.pub_formatoNumero(parseFloat(temp), 13, 2)); 
+	file.write(flcontmode.iface.pub_formatoNumeroAbs(parseFloat(temp), 13, 2)); 
 	
 	/// Número total de operadores intracomunitarios con rectificaciones 162 - 170 (9)
 	temp = parseFloat(cursor.valueBuffer("numtotaloirec"));
@@ -610,7 +634,7 @@ debug(temp);
 	
 	/// Importe de las rectificaciones 171 - 185 (15)
 	temp = cursor.valueBuffer("importetotaloirec");
-	file.write(flcontmode.iface.pub_formatoNumero(parseFloat(temp), 13, 2)); 
+	file.write(flcontmode.iface.pub_formatoNumeroAbs(parseFloat(temp), 13, 2)); 
 	
 	/// Indicador de cambio en la periodicidad 186 - 186 (1)
 	temp = (cursor.valueBuffer("cambioperiodicidad") ? "X" : " ");
@@ -697,7 +721,7 @@ debug(temp);
 		
 		/// Base imponible 134 - 146
 		temp = qryMod349Tipo2.value("baseimponible");
-		file.write(flcontmode.iface.pub_formatoNumero(parseFloat(temp), 11, 2)); 
+		file.write(flcontmode.iface.pub_formatoNumeroAbs(parseFloat(temp), 11, 2)); 
 	
 		/// Relleno 147 - 250 (104)
 		file.write(flfactppal.iface.pub_espaciosDerecha("", 104));
@@ -779,11 +803,11 @@ debug(temp);
 		
 		/// Base imponible rectificada 153 - 165 (13)
 		temp = qryMod349Tipo2.value("birectificada");
-		file.write(flcontmode.iface.pub_formatoNumero(parseFloat(temp), 11, 2)); 
+		file.write(flcontmode.iface.pub_formatoNumeroAbs(parseFloat(temp), 11, 2)); 
 	
 		/// Base imponible declarada anteriormente 166 - 178 (13)
 		temp = qryMod349Tipo2.value("bianterior");
-		file.write(flcontmode.iface.pub_formatoNumero(parseFloat(temp), 11, 2)); 
+		file.write(flcontmode.iface.pub_formatoNumeroAbs(parseFloat(temp), 11, 2)); 
 	
 		/// Relleno 179 - 250 (72)
 		file.write(flfactppal.iface.pub_espaciosDerecha("", 72));
@@ -864,7 +888,7 @@ function oficial_presTelematica2010()
 debug(temp);
 	if (!flcontmode.iface.pub_verificarDato(temp, true, util.translate("scripts", "Apellidos o razón social"), 40))
 		return false;
-	temp = flcontmode.iface.pub_controlCaracteres(temp);
+	temp = flcontmode.iface.pub_formatoAlfanumerico349(temp);
 	file.write(flfactppal.iface.pub_espaciosDerecha(temp, 40)); 
 	
 	/// Tipo de soporte 58 - 58 (1)
@@ -874,13 +898,14 @@ debug(temp);
 	temp = cursor.valueBuffer("telefonorel");
 	if (!flcontmode.iface.pub_verificarDato(temp, true, util.translate("scripts", "Persona con quien relacionarse (teléfono)"), 9))
 		return false;
+	temp = flcontmode.iface.pub_formatoAlfanumerico349(temp);
 	file.write(flfactppal.iface.pub_espaciosDerecha(temp, 9));
 	
 	/// Persona con quien relacionarse (apellidos y nombre) 59 - 107 (39)
 	temp = cursor.valueBuffer("personarel");
 	if (!flcontmode.iface.pub_verificarDato(temp, true, util.translate("scripts", "Persona con quien relacionarse (apellidos y nombre)"), 40))
 		return false;
-	temp = flcontmode.iface.pub_controlCaracteres(temp);
+	temp = flcontmode.iface.pub_formatoAlfanumerico349(temp);
 	file.write(flfactppal.iface.pub_espaciosDerecha(temp, 40)); 
 	
 	/// Número de justificante 108 - 120 (13)
@@ -941,7 +966,7 @@ debug(temp);
 	
 	/// Importe de las operaciones intracomunitarias 147 - 161 (15)
 	temp = cursor.valueBuffer("importetotaloi");
-	file.write(flcontmode.iface.pub_formatoNumero(parseFloat(temp), 13, 2)); 
+	file.write(flcontmode.iface.pub_formatoNumeroAbs(parseFloat(temp), 13, 2)); 
 	
 	/// Número total de operadores intracomunitarios con rectificaciones 162 - 170 (9)
 	temp = parseFloat(cursor.valueBuffer("numtotaloirec"));
@@ -953,7 +978,7 @@ debug(temp);
 	
 	/// Importe de las rectificaciones 171 - 185 (15)
 	temp = cursor.valueBuffer("importetotaloirec");
-	file.write(flcontmode.iface.pub_formatoNumero(parseFloat(temp), 13, 2)); 
+	file.write(flcontmode.iface.pub_formatoNumeroAbs(parseFloat(temp), 13, 2)); 
 	
 	/// Indicador de cambio en la periodicidad 186 - 186 (1)
 	temp = (cursor.valueBuffer("cambioperiodicidad") ? "X" : " ");
@@ -1027,7 +1052,7 @@ debug(temp);
 		temp = qryMod349Tipo2.value("nombre");
 		if (!flcontmode.iface.pub_verificarDato(temp, true, util.translate("scripts", "Nombre del operador"), 40))
 			return false;
-		temp = flcontmode.iface.pub_controlCaracteres(temp);
+		temp = flcontmode.iface.pub_formatoAlfanumerico349(temp);
 		file.write(flfactppal.iface.pub_espaciosDerecha(temp, 40)); 
 	
 		/// Clave de operacion 133 - 133 (1)
@@ -1038,7 +1063,7 @@ debug(temp);
 		
 		/// Base imponible 134 - 146
 		temp = qryMod349Tipo2.value("baseimponible");
-		file.write(flcontmode.iface.pub_formatoNumero(parseFloat(temp), 11, 2)); 
+		file.write(flcontmode.iface.pub_formatoNumeroAbs(parseFloat(temp), 11, 2)); 
 	
 		/// Relleno 147 - 250 (104)
 // 		file.write(flfactppal.iface.pub_espaciosDerecha("", 104));
@@ -1094,7 +1119,7 @@ debug(temp);
 		temp = qryMod349Tipo2.value("nombre");
 		if (!flcontmode.iface.pub_verificarDato(temp, true, util.translate("scripts", "Nombre del operador"), 40))
 			return false;
-		temp = flcontmode.iface.pub_controlCaracteres(temp);
+		temp = flcontmode.iface.pub_formatoAlfanumerico349(temp);
 		file.write(flfactppal.iface.pub_espaciosDerecha(temp, 40)); 
 	
 		/// Clave de operacion 133 - 133 (1)
@@ -1120,11 +1145,11 @@ debug(temp);
 		
 		/// Base imponible rectificada 153 - 165 (13)
 		temp = qryMod349Tipo2.value("birectificada");
-		file.write(flcontmode.iface.pub_formatoNumero(parseFloat(temp), 11, 2)); 
+		file.write(flcontmode.iface.pub_formatoNumeroAbs(parseFloat(temp), 11, 2)); 
 	
 		/// Base imponible declarada anteriormente 166 - 178 (13)
 		temp = qryMod349Tipo2.value("bianterior");
-		file.write(flcontmode.iface.pub_formatoNumero(parseFloat(temp), 11, 2)); 
+		file.write(flcontmode.iface.pub_formatoNumeroAbs(parseFloat(temp), 11, 2)); 
 	
 		/// Relleno 179 - 250 (72)
 // 		file.write(flfactppal.iface.pub_espaciosDerecha("", 72));
@@ -1144,7 +1169,352 @@ debug(temp);
 //// OFICIAL /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 
-/** @class_definition head */
+/** @class_definition boe2011 */
+//////////////////////////////////////////////////////////////////
+//// BOE2011 /////////////////////////////////////////////////////
+/** \D Genera un fichero para realizar la presentación telemática del modelo
+\end */
+
+function boe2011_presTelematica()
+{
+    this.iface.presTelematica2011();
+}
+
+/*Los diseños lógicos de registro para presentación telemática del modelo 349 no han cambiado desde 2010, pero se realiza una llamada a una nueva función para adaptar la generación del registro a nuevas funciones fácilmente modificables*/
+function boe2011_presTelematica2011() {
+    
+    var curMod:FLSqlCursor = this.cursor();
+    if (!curMod.isValid()){
+        return;
+    }
+    
+    var nombreFichero = this.iface.nombreFichero();
+    if (!nombreFichero){
+        return;
+    }
+
+    /*var soporteModelo = this.iface.soporteModelo();
+    if (!soporteModelo) {
+        return;
+    }*/
+    
+    var util:FLUtil = new FLUtil();
+    util.createProgressDialog(util.translate("scripts", "Generando registro de tipo 1"), 10);
+    util.setProgress(2);
+
+    flcontmode.iface.error = "";
+    
+    var file:Object = new File(nombreFichero);
+    file.open(File.WriteOnly);
+    
+    file.write(this.iface.tiporeg1(curMod) + "\r\n");
+    
+    util.setProgress(10);
+    util.destroyProgressDialog();
+    
+    var curMod2:FLSqlCursor = new FLSqlCursor("co_operaciones349");
+    curMod2.select("idmodelo = " + curMod.valueBuffer("idmodelo"));
+    util.createProgressDialog(util.translate("scripts", "Generando registro de tipo 2 Operaciones Intracomunitarias"), curMod2.size());
+    var progreso:Number = 0;
+    while (curMod2.next()){
+        util.setProgress(progreso++);
+        file.write(this.iface.tiporeg2(curMod,curMod2) + "\r\n");
+    }
+    util.destroyProgressDialog();
+    
+    var curMod2r:FLSqlCursor = new FLSqlCursor("co_rectificaciones349");
+    curMod2r.select("idmodelo = " + curMod.valueBuffer("idmodelo"));
+    util.createProgressDialog(util.translate("scripts", "Generando registro de tipo 2 facturas recibidas"), curMod2r.size());
+    var progreso:Number = 0;
+    while (curMod2r.next()){
+        file.write(this.iface.tiporeg2r(curMod,curMod2r) + "\r\n");
+    }
+    util.destroyProgressDialog();
+
+    file.close();
+     
+    util.destroyProgressDialog();
+    
+    var util:FLUtil = new FLUtil();
+    if (flcontmode.iface.error == "") {
+       MessageBox.information(util.translate("scripts", "Generado fichero en :\n\n" + nombreFichero + "\n\n"), MessageBox.Ok, MessageBox.NoButton, MessageBox.NoButton);
+    } else {
+        MessageBox.information(util.translate("scripts", "Se han detectado los siguientes errores :\n\n" +flcontmode.iface.error+ "\n\n"), MessageBox.Ok, MessageBox.NoButton, MessageBox.NoButton);
+    }
+}
+
+function boe2011_nombreFichero():String
+{
+    var nombreFichero:String = FileDialog.getSaveFileName("*.*");
+    if (!nombreFichero) {
+        MessageBox.warning("No ha indicado el nombre del fichero",MessageBox.Ok, MessageBox.NoButton);
+        return "";
+    } else {
+        return nombreFichero;
+    }
+
+}
+
+function boe2011_soporteModelo():String{
+    
+    var util:FLUtil = new FLUtil();
+    
+    // Tipo de soporte
+    var tipoSoporte:String;
+    var presTelematica:String = util.translate("scripts", "Transmisión telemática");
+    var soporteMagnetico:String = util.translate("scripts", "Soporte Magnético");
+    var soportes:Array = [presTelematica, soporteMagnetico];
+    var opcion:String = Input.getItem(util.translate("scripts", "Indique el tipo de soporte"), soportes, presTelematica, false);
+    if (!opcion){
+        MessageBox.warning("No ha indicado el tipo de soporte.\nSe asignara presentación telemática como valor por defecto",MessageBox.Ok,MessageBox.NoButton);
+        return "T";
+    }
+        
+    switch (opcion) {
+        case presTelematica:
+            tipoSoporte = "T";
+            break;
+    
+    case soporteMagnetico:
+            tipoSoporte = "C";
+            break;
+    }
+    
+    return tipoSoporte;
+}
+    
+function boe2011_tiporeg1(curMod:FLSlqCursor):String {
+
+    //Registro de tipo 1 declarante
+    var codReg = "1";
+    var desReg:Array = flcontmode.iface.pub_desRegistro349(codReg);
+    
+    var util:FLUtil = new FLUtil();
+    var valorCampo;
+    var nombreCampo = "";
+    var formatoCampo = "";
+    var registro:Object = {};
+    
+    for (var i = 0; i < desReg.length; i++) {
+        nombreCampo = desReg[i][0];
+        longitudCampo = desReg[i][2];
+        formatoCampo = desReg[i][3];
+        if (formatoCampo == "B") {
+            valorCampo = " ";
+        } else {
+            switch(nombreCampo) {
+                case "tiporeg":
+                    valorCampo = "1";
+                    break;
+                
+                case "modelo":
+                    valorCampo = "349";
+                    break;
+                    
+                case "ejercicio":
+                    var fecha:Date = curMod.valueBuffer("fechainicio");
+                    valorCampo = fecha.getYear().toString();
+                    break;
+                    
+                case "tiposoporte":
+                    valorCampo = this.iface.soporteModelo();
+                    break;
+                
+                case "complementaria":
+                    if (curMod.valueBuffer("complementaria")) {
+                        valorCampo = "C";
+                    } else {
+                        valorCampo = " ";
+                    }
+                    break;
+                    
+                case "sustitutiva":
+                    if (curMod.valueBuffer("sustitutiva")) {
+                        valorCampo = "S";
+                    } else{
+                        valorCampo = " ";
+                    }
+                    break;
+                    
+                case "jusanterior":
+                    if (curMod.valueBuffer("complementaria") || curMod.valueBuffer("sustitutiva")) {
+                        valorCampo = curMod.valueBuffer("numanterior");
+                    } else {
+                        valorCampo = "0";
+                    }
+                    break;
+                
+                case "periodo":
+                    if (curMod.valueBuffer("tipoperiodo") == "Trimestre") {
+                        valorCampo = curMod.valueBuffer("periodo");
+                    } else if (curMod.valueBuffer("tipoperiodo") == "Mes") {
+                        valorCampo = curMod.valueBuffer("mes");
+                    } else {
+                        valorCampo = "0A";
+                    }
+                    break;
+                
+                case "cambioperiodicidad":
+                    if (curMod.valueBuffer("cambioperiodicidad")){
+                        valorCampo = "X";
+                    } else {
+                       valorCampo = " "; 
+                    }
+                    break;
+                    
+                case "importetotaloi":
+                case "importetotaloirec":
+                    valorCampo = flcontmode.iface.pub_formatoNumero(Math.abs(parseFloat(curMod.valueBuffer(nombreCampo))), (parseFloat(longitudCampo)-2), 2); 
+                    break;
+
+                default :
+                    // cifnifpres
+                    // nombrepres
+                    // tiposoporte
+                    // telefonorel
+                    // personarel
+                    // numjustificante
+                    // numtotaloi
+                    // numtotaloirec
+                    // cifnifreplegal
+                    valorCampo = curMod.valueBuffer(nombreCampo);
+                    break;
+            }
+        }
+        debug("registro["+nombreCampo+"] = "+valorCampo);
+        registro[nombreCampo] = valorCampo;
+    }
+    
+    return flcontmode.iface.pub_generarRegistro(desReg,registro);
+
+}
+
+/*Registro de declarados operadores intracomunitarios*/
+function boe2011_tiporeg2(curMod:FLSlqCursor,curMod2:FlsqlCursor):String {
+
+    var codReg = "2";
+    var desReg:Array = flcontmode.iface.pub_desRegistro349(codReg);
+    
+    var util:FLUtil = new FLUtil();
+    var valorCampo;
+    var nombreCampo = "";
+    var formatoCampo = "";
+    var registro:Object = {};
+    
+    for (var i = 0; i < desReg.length; i++) {
+        nombreCampo = desReg[i][0];
+        longitudCampo = desReg[i][2];
+        formatoCampo = desReg[i][3];
+        if (formatoCampo == "B") {
+            valorCampo = " ";
+        } else {
+            switch(nombreCampo) {
+                case "tiporeg":
+                    valorCampo = "2";
+                    break;
+                
+                case "modelo":
+                    valorCampo = "349";
+                    break;
+                    
+                case "ejercicio":
+                    var fecha:Date = curMod.valueBuffer("fechainicio");
+                    valorCampo = fecha.getYear().toString();
+                    break;
+                    
+                case "cifnifpres":
+                    valorCampo = curMod.valueBuffer("cifnifpres");
+                    break;
+
+                case "baseimponible":
+                    valorCampo = flcontmode.iface.pub_formatoNumero(Math.abs(parseFloat(curMod2.valueBuffer(nombreCampo))), (parseFloat(longitudCampo)-2), 2); 
+                    break;
+                
+                default :
+                    // codue
+                    // cifnif
+                    // nombre
+                    // clave
+                    valorCampo = curMod2.valueBuffer(nombreCampo);
+                    break;
+            }
+        }
+
+        registro[nombreCampo] = valorCampo;
+    }
+    
+    return flcontmode.iface.pub_generarRegistro(desReg,registro);
+
+}
+
+/*Registro de rectificaciones*/
+function boe2011_tiporeg2r(curMod:FLSlqCursor,curMod2r:FlsqlCursor):String {
+
+    var codReg = "2r";
+    var desReg:Array = flcontmode.iface.pub_desRegistro349(codReg);
+    
+    var util:FLUtil = new FLUtil();
+    var valorCampo;
+    var nombreCampo = "";
+    var formatoCampo = "";
+    var registro:Object = {};
+    
+    for (var i = 0; i < desReg.length; i++) {
+        nombreCampo = desReg[i][0];
+        longitudCampo = desReg[i][2];
+        formatoCampo = desReg[i][3];
+        if (formatoCampo == "B") {
+            valorCampo = " ";
+        } else {
+            switch(nombreCampo) {
+                case "tiporeg":
+                    valorCampo = "2";
+                    break;
+                
+                case "modelo":
+                    valorCampo = "349";
+                    break;
+                    
+                case "ejercicio":
+                    var fecha:Date = curMod.valueBuffer("fechainicio");
+                    valorCampo = fecha.getYear().toString();
+                    break;
+                    
+                case "cifnifpres":
+                    valorCampo = curMod.valueBuffer("cifnifpres");
+                    break;
+
+                case "baseimponible":
+                case "bianterior":
+                    valorCampo = flcontmode.iface.pub_formatoNumero(Math.abs(parseFloat(curMod2r.valueBuffer(nombreCampo))), (parseFloat(longitudCampo)-2), 2); 
+                    break;
+                    
+                case "codejercicio":
+                    var fecha:Date = util.sqlSelect("ejercicios","fechainicio","codejercicio='"+curMod2r.valueBuffer("codejercicio")+"'");
+                    valorCampo = fecha.getYear().toString();
+                    break;
+                
+                default :
+                    // codue
+                    // cifnif
+                    // nombre
+                    // clave
+                    // periodo
+                    valorCampo = curMod2r.valueBuffer(nombreCampo);
+                    break;
+            }
+        }
+        
+        registro[nombreCampo] = valorCampo;
+    }
+    
+    return flcontmode.iface.pub_generarRegistro(desReg,registro);
+
+}
+
+//// BOE2011 /////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 /////////////////////////////////////////////////////////////////
 //// DESARROLLO /////////////////////////////////////////////////
 

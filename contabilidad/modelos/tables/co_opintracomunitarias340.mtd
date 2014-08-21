@@ -263,7 +263,7 @@
 		<null>true</null>
 		<pk>false</pk>
 		<type>string</type>
-		<length>36</length>
+		<length>35</length>
 	</field>
 
 	<field>

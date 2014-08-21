@@ -115,11 +115,26 @@ class oficial extends interna {
 //// OFICIAL /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
+/** @class_declaration boe2011 */
+//////////////////////////////////////////////////////////////////
+//// BOE2011 /////////////////////////////////////////////////////
+class boe2011 extends oficial {
+    function boe2011( context ) { oficial( context ); }
+    function datosOperacionE(codCliente:String):Array {
+        return this.ctx.boe2011_datosOperacionE(codCliente);
+    }
+    function datosOperacionA(codProveedor:String):Array {
+        return this.ctx.boe2011_datosOperacionA(codProveedor);
+    }
+}
+//// BOE2011 /////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+
 /** @class_declaration head */
 /////////////////////////////////////////////////////////////////
 //// DESARROLLO /////////////////////////////////////////////////
-class head extends oficial {
-    function head( context ) { oficial ( context ); }
+class head extends boe2011 {
+    function head( context ) { boe2011 ( context ); }
 }
 //// DESARROLLO /////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
@@ -303,9 +318,9 @@ function oficial_calcularValores()
 // 	qryOperaciones.setFrom("clientes c INNER JOIN facturascli f ON c.codcliente = f.codcliente INNER JOIN co_asientos a ON f.idasiento = a.idasiento");
 // 	qryOperaciones.setWhere("c.regimeniva IN ('UE', 'U.E.') AND a.fecha BETWEEN '" + cursor.valueBuffer("fechainicio") + "' AND '" + cursor.valueBuffer("fechafin") + "' GROUP BY c.codcliente");
 	qryOperaciones.setTablesList("co_partidas,co_subcuentascli,co_asientos");
-	qryOperaciones.setSelect("p.idpartida, p.idasiento, sc.codcliente, p.baseimponible");
+	qryOperaciones.setSelect("p.idpartida, p.idasiento, sc.codcliente, p.baseimponible, s.idcuentaesp");
 	qryOperaciones.setFrom("co_asientos a INNER JOIN co_partidas p ON a.idasiento = p.idasiento INNER JOIN co_subcuentas s ON p.idsubcuenta = s.idsubcuenta INNER JOIN co_subcuentascli sc ON p.idcontrapartida = sc.idsubcuenta");
-	qryOperaciones.setWhere("s.codejercicio = '" + cursor.valueBuffer("codejercicio") + "' AND s.idcuentaesp IN ('IVAEUE') AND a.fecha BETWEEN '" + cursor.valueBuffer("fechainicio") + "' AND '" + cursor.valueBuffer("fechafin") + "' ORDER BY sc.codcliente");
+	qryOperaciones.setWhere("s.codejercicio = '" + cursor.valueBuffer("codejercicio") + "' AND s.idcuentaesp IN ('IVAEUE','IVARES') AND a.fecha BETWEEN '" + cursor.valueBuffer("fechainicio") + "' AND '" + cursor.valueBuffer("fechafin") + "' ORDER BY sc.codcliente");
 	qryOperaciones.setForwardOnly(true);
 	
 	if (!qryOperaciones.exec()) {
@@ -326,24 +341,37 @@ function oficial_calcularValores()
 	var idRectificacion:String;
 	var fechaRectificada:String;
 	var periodoRec:String;
-	var ejercicioRec:String;
+	var clave;
+// 	var ejercicioRec:String;
 	var idModeloRec:String;
 	var idPartida;
+	var codEjercicioRec;
+	var rectificacion;
 	while (qryOperaciones.next()) {
 		util.setProgress(++paso);
+                clave = "E";
 		idPartida = qryOperaciones.value("p.idpartida");
 		codCliente = qryOperaciones.value("sc.codcliente");
-
+                idCuentaEsp = qryOperaciones.value("s.idcuentaesp");
+                if(idCuentaEsp && idCuentaEsp == "IVARES"){
+                    clave = "S";
+                }
 		importe = parseFloat(qryOperaciones.value("p.baseimponible"));
 		if (importe == 0) {
 			continue;
 		}
-		
+		rectificacion = false;
 		fechaRectificada = util.sqlSelect("facturascli f INNER JOIN facturascli fr ON f.idfacturarect = fr.idfactura", "fr.fecha", "f.idasiento = " + qryOperaciones.value("p.idasiento"), "facturascli");
 		if (fechaRectificada) {
+			codEjercicioRec = util.sqlSelect("facturascli f INNER JOIN facturascli fr ON f.idfacturarect = fr.idfactura", "fr.codejercicio", "f.idasiento = " + qryOperaciones.value("p.idasiento"), "facturascli");
 			periodoRec = this.iface.obtenerPeriodo(fechaRectificada);
-			ejercicioRec = fechaRectificada.getYear();
-			idRectificacion = util.sqlSelect("co_rectificaciones349", "id", "idmodelo = " + idModelo + " AND codcliente = '" + codCliente + "' AND periodo = '" + periodoRec + "' AND codejercicio = '" + ejercicioRec + "'");
+			if (codEjercicioRec != cursor.valueBuffer("codejercicio") || periodoRec != cursor.valueBuffer("periodo")) {
+				rectificacion = true;
+			}
+		}
+		if (rectificacion) {
+// 			ejercicioRec = fechaRectificada.getYear();
+			idRectificacion = util.sqlSelect("co_rectificaciones349", "id", "idmodelo = " + idModelo + " AND codcliente = '" + codCliente + "' AND periodo = '" + periodoRec + "' AND codejercicio = '" + codEjercicioRec + "'");
 			if (!idRectificacion) {
 				datosOp = this.iface.datosOperacionE(codCliente);
 				if (!datosOp.ok) {
@@ -351,7 +379,7 @@ function oficial_calcularValores()
 					MessageBox.critical(util.translate("scripts", "Falló la obtención de datos del cliente %1.\nAsegúrese de que el cliente tiene una dirección de facturación y un país asociado a la misma.").arg(codCliente), MessageBox.Ok, MessageBox.NoButton);
 					return;
 				}
-				idModeloRec = util.sqlSelect("co_modelo349", "idmodelo", "periodo = '" + periodoRec + "' AND EXTRACT(YEAR FROM fechainicio) = '" + ejercicioRec + "'");
+				idModeloRec = util.sqlSelect("co_modelo349", "idmodelo", "periodo = '" + periodoRec + "' AND EXTRACT(YEAR FROM fechainicio) = '" + codEjercicioRec + "'");
 				if (idModeloRec) {
 					biAnterior = parseFloat(util.sqlSelect("co_operaciones349", "baseimponible", "idmodelo = " + idModeloRec + " AND codcliente = '" + codCliente + "'"));
 					if (isNaN(biAnterior)) {
@@ -368,9 +396,9 @@ function oficial_calcularValores()
 					if (idModeloRec) {
 						setValueBuffer("idmodelorec", idModeloRec);
 					}
-					setValueBuffer("codejercicio", ejercicioRec);
+					setValueBuffer("codejercicio", codEjercicioRec);
 					setValueBuffer("periodo", periodoRec);
-					setValueBuffer("clave", "E");
+					setValueBuffer("clave", clave);
 					setValueBuffer("codpais", datosOp.codPais);
 					setValueBuffer("codue", datosOp.codIso);
 					setValueBuffer("codcliente", codCliente);
@@ -392,7 +420,7 @@ debug("asociando rect = " + idRectificacion );
 				return false;
 			}
 		} else {
-			idOperacion = util.sqlSelect("co_operaciones349", "id", "idmodelo = " + idModelo + " AND codcliente = '" + codCliente + "'");
+			idOperacion = util.sqlSelect("co_operaciones349", "id", "idmodelo = " + idModelo + " AND codcliente = '" + codCliente + "' AND clave='"+clave+"'");
 			if (!idOperacion) {
 				datosOp = this.iface.datosOperacionE(codCliente);
 				if (!datosOp.ok) {
@@ -404,7 +432,7 @@ debug("asociando rect = " + idRectificacion );
 					setModeAccess(Insert);
 					refreshBuffer();
 					setValueBuffer("idmodelo", cursor.valueBuffer("idmodelo"));
-					setValueBuffer("clave", "E");
+					setValueBuffer("clave", clave);
 					setValueBuffer("codpais", datosOp.codPais);
 					setValueBuffer("codue", datosOp.codIso);
 					setValueBuffer("codcliente", codCliente);
@@ -430,9 +458,9 @@ debug("idOperacion cliente = " + idOperacion);
 	paso = 0;
 	
 	qryOperaciones.setTablesList("co_partidas,co_subcuentasprov,co_asientos");
-	qryOperaciones.setSelect("sp.codproveedor, p.idpartida, p.idasiento, p.baseimponible");
+	qryOperaciones.setSelect("sp.codproveedor, p.idpartida, p.idasiento, p.baseimponible, s.idcuentaesp");
 	qryOperaciones.setFrom("co_asientos a INNER JOIN co_partidas p ON a.idasiento = p.idasiento INNER JOIN co_subcuentas s ON p.idsubcuenta = s.idsubcuenta INNER JOIN co_subcuentasprov sp ON p.idcontrapartida = sp.idsubcuenta");
-	qryOperaciones.setWhere("s.codejercicio = '" + cursor.valueBuffer("codejercicio") + "' AND s.idcuentaesp IN ('IVASUE') AND a.fecha BETWEEN '" + cursor.valueBuffer("fechainicio") + "' AND '" + cursor.valueBuffer("fechafin") + "' ORDER BY sp.codproveedor");
+	qryOperaciones.setWhere("s.codejercicio = '" + cursor.valueBuffer("codejercicio") + "' AND s.idcuentaesp IN ('IVASUE', 'IVASSE') AND a.fecha BETWEEN '" + cursor.valueBuffer("fechainicio") + "' AND '" + cursor.valueBuffer("fechafin") + "' ORDER BY sp.codproveedor");
 	
 	qryOperaciones.setForwardOnly(true);
 	
@@ -452,11 +480,18 @@ debug("idOperacion cliente = " + idOperacion);
 			continue;
 		}
 		
+		rectificacion = false;
 		fechaRectificada = util.sqlSelect("facturasprov f INNER JOIN facturasprov fr ON f.idfacturarect = fr.idfactura", "fr.fecha", "f.idasiento = " + qryOperaciones.value("p.idasiento"), "facturasprov");
 		if (fechaRectificada) {
+			codEjercicioRec = util.sqlSelect("facturasprov f INNER JOIN facturasprov fr ON f.idfacturarect = fr.idfactura", "fr.codejercicio", "f.idasiento = " + qryOperaciones.value("p.idasiento"), "facturasprov");
 			periodoRec = this.iface.obtenerPeriodo(fechaRectificada);
-			ejercicioRec = fechaRectificada.getYear();
-			idRectificacion = util.sqlSelect("co_rectificaciones349", "id", "idmodelo = " + idModelo + " AND codproveedor = '" + codProveedor + "' AND periodo = '" + periodoRec + "' AND codejercicio = '" + ejercicioRec + "'");
+			if (codEjercicioRec != cursor.valueBuffer("codejercicio") || periodoRec != cursor.valueBuffer("periodo")) {
+				rectificacion = true;
+			}
+		}
+		if (rectificacion) {
+// 			ejercicioRec = fechaRectificada.getYear();
+			idRectificacion = util.sqlSelect("co_rectificaciones349", "id", "idmodelo = " + idModelo + " AND codproveedor = '" + codProveedor + "' AND periodo = '" + periodoRec + "' AND codejercicio = '" + codEjercicioRec + "'");
 			if (!idRectificacion) {
 				datosOp = this.iface.datosOperacionA(codProveedor);
 				if (!datosOp.ok) {
@@ -464,7 +499,7 @@ debug("idOperacion cliente = " + idOperacion);
 					MessageBox.critical(util.translate("scripts", "Falló la obtención de datos del proveedor %1.\nAsegúrese de que el proveedor tiene una dirección principal y un país asociado a la misma.").arg(codProveedor), MessageBox.Ok, MessageBox.NoButton);
 					return;
 				}
-				idModeloRec = util.sqlSelect("co_modelo349", "idmodelo", "periodo = '" + periodoRec + "' AND EXTRACT(YEAR FROM fechainicio) = '" + ejercicioRec + "'");
+				idModeloRec = util.sqlSelect("co_modelo349", "idmodelo", "periodo = '" + periodoRec + "' AND EXTRACT(YEAR FROM fechainicio) = '" + codEjercicioRec + "'");
 				if (idModeloRec) {
 					biAnterior = parseFloat(util.sqlSelect("co_operaciones349", "baseimponible", "idmodelo = " + idModeloRec + " AND codproveedor = '" + codProveedor + "'"));
 					if (isNaN(biAnterior)) {
@@ -481,9 +516,19 @@ debug("idOperacion cliente = " + idOperacion);
 					if (idModeloRec) {
 						setValueBuffer("idmodelorec", idModeloRec);
 					}
-					setValueBuffer("codejercicio", ejercicioRec);
+					setValueBuffer("codejercicio", codEjercicioRec);
 					setValueBuffer("periodo", periodoRec);
-					setValueBuffer("clave", "A");
+					switch (qryOperaciones.value("s.idcuentaesp")) {
+						case "IVASUE": {
+							clave = "A";
+							break;
+						}
+						case "IVASSE": {
+							clave = "I";
+							break;
+						}
+					}
+					setValueBuffer("clave", clave);
 					setValueBuffer("codpais", datosOp.codPais);
 					setValueBuffer("codue", datosOp.codIso);
 					setValueBuffer("codproveedor", codProveedor);
@@ -505,7 +550,7 @@ debug("idOperacion cliente = " + idOperacion);
 			}
 		} else {
 debug("partida = " + idPartida);
-			idOperacion = util.sqlSelect("co_operaciones349", "id", "idmodelo = " + idModelo + " AND codproveedor = '" + codProveedor + "'");
+			idOperacion = util.sqlSelect("co_operaciones349", "id", "idmodelo = " + idModelo + " AND codproveedor = '" + codProveedor + "' AND clave='"+clave+"'");
 debug("idOperacion = " + idOperacion);
 			if (!idOperacion) {
 				datosOp = this.iface.datosOperacionA(codProveedor);
@@ -518,7 +563,17 @@ debug("idOperacion = " + idOperacion);
 					setModeAccess(Insert);
 					refreshBuffer();
 					setValueBuffer("idmodelo", cursor.valueBuffer("idmodelo"));
-					setValueBuffer("clave", "A");
+					switch (qryOperaciones.value("s.idcuentaesp")) {
+						case "IVASUE": {
+							clave = "A";
+							break;
+						}
+						case "IVASSE": {
+							clave = "I";
+							break;
+						}
+					}
+					setValueBuffer("clave", clave);
 					setValueBuffer("codpais", datosOp.codPais);
 					setValueBuffer("codue", datosOp.codIso);
 					setValueBuffer("codproveedor", codProveedor);
@@ -752,7 +807,7 @@ function oficial_establecerFechasPeriodo()
 	fechaFin.setYear(inicioEjercicio.getYear());
 	fechaInicio.setDate(1);
 	
-debug(cursor.valueBuffer("tipoperiodo") + " " + cursor.valueBuffer("trimestre"));
+//debug(cursor.valueBuffer("tipoperiodo") + " " + cursor.valueBuffer("trimestre"));
 	switch (cursor.valueBuffer("tipoperiodo")) {
 		case "Trimestre": {
 			switch (cursor.valueBuffer("periodo")) {
@@ -1248,13 +1303,28 @@ function oficial_tbnDetalleRec_clicked()
 
 function oficial_obtenerPeriodo(fecha:Date):String
 {
-	var mes:Number = fecha.getMonth();
+	var cursor = this.cursor();
 	var periodo:String;
-	switch (mes) {
-		case 1: case 2: case 3: { periodo = "1T"; break;}
-		case 4: case 5: case 6: { periodo = "2T"; break;}
-		case 7: case 8: case 9: { periodo = "3T"; break;}
-		case 10: case 11: case 12: { periodo = "4T"; break;}
+	switch (cursor.valueBuffer("tipoperiodo")) {
+		case "Mes": {
+			var mes:Number = fecha.getMonth();
+			switch (mes) {
+				case 1: case 2: case 3: { periodo = "1T"; break;}
+				case 4: case 5: case 6: { periodo = "2T"; break;}
+				case 7: case 8: case 9: { periodo = "3T"; break;}
+				case 10: case 11: case 12: { periodo = "4T"; break;}
+			}
+			break;
+		}
+		case "Trimestre": {
+			var mes:Number = fecha.getMonth();
+			periodo = flfactppal.iface.pub_cerosIzquierda(mes, 2);
+			break;
+		}
+		case "Año" : {
+			periodo = "0A";
+			break;
+		}
 	}
 	return periodo;
 }
@@ -1308,7 +1378,8 @@ function oficial_limpiarValores():Boolean
 	curPartida.setActivatedCommitActions(false);
 
 	var idModelo:String = cursor.valueBuffer("idmodelo");
-	var curOperaciones:FLSqlCursor = new FLSqlCursor("co_operaciones349");
+	var curOperaciones = new FLSqlCursor("co_operaciones349");
+	curOperaciones.setForwardOnly(true);
 	curOperaciones.select("idmodelo = " + idModelo);
 debug(idModelo);
 	while (curOperaciones.next()) {
@@ -1327,7 +1398,8 @@ debug(idModelo);
 		}
 	}
 debug(idModelo);
-	var curRectificaciones:FLSqlCursor = new FLSqlCursor("co_rectificaciones349");
+	var curRectificaciones = new FLSqlCursor("co_rectificaciones349");
+	curRectificaciones.setForwardOnly(true);
 	curRectificaciones.select("idmodelo = " + idModelo);
 	while (curRectificaciones.next()) {
 		curPartida.select("idrectificacion349 = " + curRectificaciones.valueBuffer("id"));
@@ -1458,6 +1530,112 @@ function oficial_habilitarPeriodo()
 }
 
 //// OFICIAL /////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+
+/** @class_definition boe2011 */
+/////////////////////////////////////////////////////////////////
+//// BOE2011 ///////////////////////////////////////////////////
+/** \C Obtiene los datos relativos a un cliente para guardarlos en un registros de operación o rectificación
+@param        codCliente: código del cliente
+@return        array con los siguientes valores:
+        ok: True si los datos se obtienen correctamente, false en caso contrario
+        codPais: País de la dirección de facturación del cliente. Si no existe se toma una dirección al azar.
+        codIso: Código ISO del país miembro de la Unión Europea
+        cifNif: Cif del cliente, validación segun codue
+        nombre: Nombre y apellidos o razón social del cliente, valida codificacion alfanumerica para el 349
+\end */
+function boe2011_datosOperacionE(codCliente:String):Array
+{
+    var ret:Array = [];
+    ret.ok = false;
+
+    var qryCliente:FLSqlQuery = new FLSqlQuery;
+    qryCliente.setTablesList("clientes,dirclientes,paises");
+    qryCliente.setSelect("p.codpais,p.codiso,c.cifnif,c.nombre");
+    qryCliente.setFrom("clientes c INNER JOIN dirclientes d ON c.codcliente = d.codcliente INNER JOIN paises p ON d.codpais = p.codpais");
+    qryCliente.setWhere("c.codcliente = '" + codCliente + "' AND d.domfacturacion = true");
+    qryCliente.setForwardOnly(true);
+
+    if (!qryCliente.exec())
+        return ret;
+
+    if (!qryCliente.first()) {
+        qryCliente.setWhere("c.codcliente = '" + codCliente + "'");
+        qryCliente.setForwardOnly(true);
+
+        if (!qryCliente.exec())
+                return ret;
+
+        if (!qryCliente.first())
+                return ret;
+    }
+    
+    ret.codPais = qryCliente.value("p.codpais");
+    ret.codIso = qryCliente.value("p.codiso");
+    
+    var cifNifLimpio:String = flcontmode.iface.pub_limpiarCifNif(qryCliente.value("c.cifnif"));
+    ret.cifNif = cifNifLimpio;
+    /*if (!this.iface.validarCifUE(ret.codIso,ret.cifNif)){
+        MessageBox.critical(util.translate("scripts", "Falló la validación del CIFNIF del cliente %1.\nEsto puede provocar un fallo en la generación del registro.\nSe insertarán los datos erróneos").arg(codCliente), MessageBox.Ok, MessageBox.NoButton);
+    }*/
+    
+    //En los registros de operación y rectificación el nombre sólo puede tener 40 caracteres
+    ret.nombre = flcontmode.iface.pub_formatoAlfanumerico349(qryCliente.value("c.nombre")).left(40);
+    ret.ok = true;
+
+    return ret;
+}
+
+/** \C Obtiene los datos relativos a un proveedor para guardarlos en un registros de operación o rectificación
+@param        codProveedor: código del proveedor
+@return        array con los siguientes valores:
+        ok: True si los datos se obtienen correctamente, false en caso contrario
+        codPais: País de la dirección de facturación del cliente. Si no existe se toma una dirección al azar.
+        codIso: Código ISO del país miembro de la Unión Europea
+        cifNif: Cif del cliente
+        nombre: Nombre y apellidos o razón social del cliente, valida codificacion alfanumerica para el 349
+\end */
+function boe2011_datosOperacionA(codProveedor:String):Array
+{
+    var ret:Array = [];
+    ret.ok = false;
+
+    var qryProveedor:FLSqlQuery = new FLSqlQuery;
+    qryProveedor.setTablesList("proveedores,dirproveedores,paises");
+    qryProveedor.setSelect("p.codpais,p.codiso,pr.cifnif,pr.nombre");
+    qryProveedor.setFrom("proveedores pr INNER JOIN dirproveedores d ON pr.codproveedor = d.codproveedor INNER JOIN paises p ON d.codpais = p.codpais");
+    qryProveedor.setWhere("pr.codproveedor = '" + codProveedor + "' AND d.direccionppal = true");
+    qryProveedor.setForwardOnly(true);
+
+    if (!qryProveedor.exec())
+            return ret;
+
+    if (!qryProveedor.first()) {
+            qryProveedor.setWhere("pr.codproveedor = '" + codProveedor + "'");
+            qryProveedor.setForwardOnly(true);
+
+            if (!qryProveedor.exec())
+                    return ret;
+
+            if (!qryProveedor.first())
+                    return ret;
+    }
+    ret.codPais = qryProveedor.value("p.codpais");
+    ret.codIso = qryProveedor.value("p.codiso");
+    
+    var cifNifLimpio:String = flcontmode.iface.pub_limpiarCifNif(qryProveedor.value("pr.cifnif"));
+    ret.cifNif = cifNifLimpio;
+    /*if (!this.iface.validarCifUE(ret.codIso,ret.cifNif)){
+        MessageBox.critical(util.translate("scripts", "Falló la validación del CIFNIF del cliente %1.\nEsto puede provocar un fallo en la generación del registro.\nSe insertarán los datos erróneos").arg(codCliente), MessageBox.Ok, MessageBox.NoButton);
+    }*/
+    
+    //En los registros de operación y rectificación el nombre sólo puede tener 40 caracteres
+    ret.nombre = flcontmode.iface.pub_formatoAlfanumerico349(qryProveedor.value("pr.nombre")).left(40);
+    ret.ok = true;
+
+    return ret;
+}
+//// BOE2011 ///////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 
 /** @class_definition head */
