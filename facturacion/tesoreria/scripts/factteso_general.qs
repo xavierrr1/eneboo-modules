@@ -138,20 +138,20 @@ function interna_init()
 //// OFICIAL /////////////////////////////////////////////////////
 function oficial_bufferChanged(fN:String)
 {
-	var util:FLUtil = new FLUtil;
-	var cursor:FLSqlCursor = this.cursor();
-	switch (fN) {
-		case "pagoindirecto": {
-			var msg:String;
-			if (cursor.valueBuffer("pagoindirecto") == true) {
-				msg = util.translate("scripts", "Al incluir un recibo de cliente en una remesa, el correspondiente asiento de pago se asigna a la subcuenta de Efectos comerciales de gestión de cobro (E.C.G.C.) asociada a la cuenta bancaria de la remesa. Cuando se recibe la confirmación del banco el usuario inserta un registro de pago para la remesa completa, que lleva las partidas de E.C.G.C. a la subcuenta de la cuenta bancaria.");
-			} else {
-				msg = util.translate("scripts", "Al incluir un recibo de cliente en una remesa, el correspondiente asiento de pago se asigna directamente a la subcuenta de la cuenta bancaria indicada en la remesa.");
-			}
-			this.child("lblDesPagoIndirecto").text = msg;
-			break;
-		}
-	}
+    var util:FLUtil = new FLUtil;
+    var cursor:FLSqlCursor = this.cursor();
+    switch (fN) {
+        case "pagoindirecto": {
+            var msg:String;
+            if (cursor.valueBuffer("pagoindirecto") == true) {
+                msg = util.translate("scripts", "Al incluir un recibo de cliente en una remesa, el correspondiente asiento de pago se asigna a la subcuenta de Efectos comerciales de gestión de cobro (E.C.G.C.) asociada a la cuenta bancaria de la remesa. Cuando se recibe la confirmación del banco el usuario inserta un registro de pago para la remesa completa, que lleva las partidas de E.C.G.C. a la subcuenta de la cuenta bancaria.");
+            } else {
+                msg = util.translate("scripts", "Al incluir un recibo de cliente en una remesa, el correspondiente asiento de pago se asigna directamente a la subcuenta de la cuenta bancaria indicada en la remesa.");
+            }
+            this.child("lblDesPagoIndirecto").text = msg;
+            break;
+        }
+    }
 }
 
 function oficial_tbnCalcularDatosCuenta_clicked()
@@ -183,15 +183,9 @@ function oficial_tbnCalcularDatosCuenta_clicked()
     var aTablasError = ["Cta. Empresa", "Cta. Cliente", "Cta. Proveedor"];
     var nombresTabla = [sys.translate("cuentas de empresa"), sys.translate("cuentas de clientes"), sys.translate("cuentas de proveedores")];
     
-<<<<<<< HEAD
     var aErrorCta:Array = [];
     var aErrorDesc:Array = [];
     var aErrorTab:Array = [];
-=======
-    var aErrorCta = [];
-    var aErrorDesc = [];
-    var aErrorTab = [];
->>>>>>> c8c9b02211e5017f6431d66f7b35969b1617c7ef
     
     for(var i = 0; i < aTablas.length; i++) {
         var paso = 0;
@@ -208,11 +202,9 @@ function oficial_tbnCalcularDatosCuenta_clicked()
         AQUtil.createProgressDialog(sys.translate("Calculando datos de IBAN en las %1...").arg(nombresTabla[i]), totalPasos);
         
         while(curCuentas.next()) {
-<<<<<<< HEAD
-            util.setProgress(++paso);
-=======
-            AQUtil.setProgress(++paso);
->>>>>>> c8c9b02211e5017f6431d66f7b35969b1617c7ef
+
+        AQUtil.setProgress(++paso);
+
             curCuentas.setModeAccess(curCuentas.Edit);
             curCuentas.refreshBuffer();
             
@@ -220,11 +212,7 @@ function oficial_tbnCalcularDatosCuenta_clicked()
             var desc = curCuentas.valueBuffer("descripcion");
             var codPais = curCuentas.valueBuffer("codpais");
         
-<<<<<<< HEAD
-            if (curCuentas.isNull("codpais") || (codPais == "ES" && paisES && paisES != "") || util.sqlSelect("paises", "codiso", "codpais = '" + curCuentas.valueBuffer("codpais") + "'") == "ES") {
-=======
             if (curCuentas.isNull("codpais") || (codPais == "ES" && paisES && paisES != "") || AQUtil.sqlSelect("paises", "codiso", "codpais = '" + curCuentas.valueBuffer("codpais") + "'") == "ES") {
->>>>>>> c8c9b02211e5017f6431d66f7b35969b1617c7ef
                 if (curCuentas.isNull("codpais") || (codPais == "ES" && paisES && paisES != "")) {
                     curCuentas.setValueBuffer("codpais", paisES);
                 }
@@ -245,7 +233,7 @@ function oficial_tbnCalcularDatosCuenta_clicked()
                     aErrorDesc.push(desc);
                     aErrorTab.push(aTablasError[i]);
                     continue;
-<<<<<<< HEAD
+
                 }
                 
                 if(isNaN(parseFloat(entidad)) || isNaN(parseFloat(entidad)) || isNaN(parseFloat(entidad))) {
@@ -255,17 +243,6 @@ function oficial_tbnCalcularDatosCuenta_clicked()
                     continue;
                 }
                 
-=======
-                }
-                
-                if(isNaN(parseFloat(entidad)) || isNaN(parseFloat(entidad)) || isNaN(parseFloat(entidad))) {
-                    aErrorCta.push(codCuenta);
-                    aErrorDesc.push(desc);
-                    aErrorTab.push(aTablasError[i]);
-                    continue;
-                }
-                
->>>>>>> c8c9b02211e5017f6431d66f7b35969b1617c7ef
                 curCuentas.setValueBuffer("ctadc", formRecordcuentasbanco.iface.pub_commonCalculateField("ctadc", curCuentas));
                 curCuentas.setValueBuffer("codigocuenta", formRecordcuentasbanco.iface.pub_commonCalculateField("codigocuenta_es", curCuentas));
             }
@@ -274,12 +251,9 @@ function oficial_tbnCalcularDatosCuenta_clicked()
             
             
             if (!curCuentas.commitBuffer()) {
-<<<<<<< HEAD
-                MessageBox.information(util.translate("scripts", "Error en el cálculo de los datos de la cuenta %1 en %2").arg(codCuenta).arg(nombresTabla[i]), MessageBox.Ok, MessageBox.NoButton);
-=======
+
                 AQUtil.destroyProgressDialog();
                 MessageBox.information(sys.translate("Error en el cálculo de los datos de la cuenta %1 en %2"), MessageBox.Ok, MessageBox.NoButton);
->>>>>>> c8c9b02211e5017f6431d66f7b35969b1617c7ef
                 return;
             }           
         } 
