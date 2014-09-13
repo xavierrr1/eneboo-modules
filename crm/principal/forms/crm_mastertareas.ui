@@ -790,6 +790,24 @@
         <receiver>tdbTareasS</receiver>
         <slot>browseRecord()</slot>
     </connection>
+    <connection>
+        <sender>tbnDeleteTareaS</sender>
+        <signal>clicked()</signal>
+        <receiver>tdbTareasS</receiver>
+        <slot>deleteRecord()</slot>
+    </connection>
+    <connection>
+        <sender>tbnEditTareaS</sender>
+        <signal>clicked()</signal>
+        <receiver>tdbTareasS</receiver>
+        <slot>editRecord()</slot>
+    </connection>
+    <connection>
+        <sender>tbnLanzarTareaS</sender>
+        <signal>clicked()</signal>
+        <receiver>tdbTareasS</receiver>
+        <slot>insertRecord()</slot>
+    </connection>
 </connections>
 <includes>
     <include location="global" impldecl="in declaration">qwidgetfactory.h</include>
