@@ -175,7 +175,7 @@
 		<null>true</null>
 		<pk>false</pk>
 		<type>string</type>
-		<length>4</length>
+		<length>8</length>
 		
 		<relation>
 			<table>cl_proyectos</table>
@@ -191,7 +191,7 @@
 		<null>true</null>
 		<pk>false</pk>
 		<type>string</type>
-		<length>4</length>
+		<length>8</length>
 		
 		<relation>
 			<table>cl_subproyectos</table>
