@@ -176,65 +176,17 @@ class modelo340 extends modelo347 {
 //// MODELO 340 /////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 
-/** @class_declaration modelo303 */
-/////////////////////////////////////////////////////////////////
-//// MODELO 303 /////////////////////////////////////////////////
-class modelo303 extends modelo340 {
-	function modelo303( context ) { modelo340 ( context ); }
-	function init() {
-		this.ctx.modelo303_init();
-	}
-	function informarTiposDec303() {
-		this.ctx.modelo303_informarTiposDec303();
-	}
-	function informarCasillas303() {
-			this.ctx.modelo303_informarCasillas303();
-	}
-}
-//// MODELO 303 /////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-
-/** @class_declaration modelo180 */
-/////////////////////////////////////////////////////////////////
-//// MODELO 180 /////////////////////////////////////////////////
-class modelo180 extends modelo303 {
-	function modelo180( context ) { modelo303 ( context ); }
-	function init() {
-		this.ctx.modelo180_init();
-	}
-	function informarTiposDec180() {
-		this.ctx.modelo180_informarTiposDec180();
-	}
-}
-//// MODELO 180 /////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-
-/** @class_declaration modelo115 */
-/////////////////////////////////////////////////////////////////
-//// MODELO 115 /////////////////////////////////////////////////
-class modelo115 extends modelo180 {
-	function modelo115( context ) { modelo180 ( context ); }
-	function init() {
-		this.ctx.modelo115_init();
-	}
-	function informarTiposDec115() {
-		this.ctx.modelo115_informarTiposDec115();
-	}
-}
-
-//// MODELO 115 /////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
 
 /** @class_declaration boe2011 */
 /////////////////////////////////////////////////////////////////
 //// BOE2011 ////////////////////////////////////////////////////
-class boe2011 extends modelo115 {
+class boe2011 extends modelo340 {
     var error:String;
     var xGesteso:Boolean;
     var xC0:Boolean;
     var xMulti:Boolean;
     
-    function boe2011( context ) { modelo115 ( context ); }
+    function boe2011( context ) { modelo340 ( context ); }
     function init() {
         this.ctx.boe2011_init();
     }
@@ -1304,156 +1256,6 @@ function modelo340_rellenarTablasModelo340()
 }
 
 //// MODELO 340 /////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-
-/** @class_definition modelo303 */
-/////////////////////////////////////////////////////////////////
-//// MODELO 303 /////////////////////////////////////////////////
-function modelo303_init()
-{
-	this.iface.__init();
-
-	var util:FLUtil = new FLUtil;
-
-	if (!util.sqlSelect("co_tipodec303", "idtipodec", "1 = 1")) {
-		this.iface.informarTiposDec303();
-	}
-	this.iface.informarCasillas303();
-}
-
-function modelo303_informarTiposDec303()
-{
-	var curTipoDec:FLSqlCursor = new FLSqlCursor("co_tipodec303");
-	var valores:Array = [["C", "Solicitud de compensación"],
-		["D", "Devolución"],
-		["G", "Cuenta corriente tributaria - ingreso"],
-		["I", "Ingreso"],
-		["N", "Sin actividad / resultado 0"], 
-		["V", "Cuenta corriente tributaria - devolución"],
-		["U", "Domiciliación de ingreso en CCC"]];
-	
-	for (var i:Number = 0; i < valores.length; i++) {
-		with (curTipoDec) {
-			setModeAccess(Insert);
-			refreshBuffer();
-			setValueBuffer("idtipodec", valores[i][0]);
-			setValueBuffer("descripcion", valores[i][1]);
-			commitBuffer();
-		}
-	}
-}
-
-function modelo303_informarCasillas303()
-{
-	var util:FLUtil = new FLUtil;
-
-	var contenido:String = "<Todos>" +
-	"<co_casillas303 casilla='[01]-[09]' descripcion='" + util.translate("scripts", "I.V.A. Devengado - Régimen General") + "' />" +
-	"<co_casillas303 casilla='[10]-[18]' descripcion='" + util.translate("scripts", "I.V.A. Devengado Recargo de equivalencia Régimen General") + "' />" +
-	"<co_casillas303 casilla='[19]-[20]' descripcion='" + util.translate("scripts", "I.V.A. Devengado Adquisiciones intracomunitarias") + "' />" +
-	"<co_casillas303 casilla='[22]-[23]' descripcion='" + util.translate("scripts", "I.V.A. Deducible por cuotas soportadas en operaciones interiores con bienes corrientes") + "' />" +
-	"<co_casillas303 casilla='[24]-[25]' descripcion='" + util.translate("scripts", "I.V.A. Deducible por cuotas soportadas en operaciones interiores con bienes de inversión") + "' />" +
-	"<co_casillas303 casilla='[26]-[27]' descripcion='" + util.translate("scripts", "I.V.A. Deducible por cuotas soportadas en importaciones de bienes corrientes") + "' />" +
-	"<co_casillas303 casilla='[28]-[29]' descripcion='" + util.translate("scripts", "I.V.A. Deducible por cuotas soportadas en importaciones de bienes de inversión") + "' />" +
-	"<co_casillas303 casilla='[30]-[31]' descripcion='" + util.translate("scripts", "I.V.A. Deducible por cuotas soportadas en adquisiciones intracomunitarias de bienes corrientes") + "' />" +
-	"<co_casillas303 casilla='[32]-[33]' descripcion='" + util.translate("scripts", "I.V.A. Deducible por cuotas soportadas en adquisiciones intracomunitarias de bienes de inversión") + "' />" + 
-	"<co_casillas303 casilla='[34]' descripcion='" + util.translate("scripts", "I.V.A. Deducible por compensaciones de regimen especial A.G.y P.") + "' />" +
-	"<co_casillas303 casilla='[42]' descripcion='" + util.translate("scripts", "Entregas intracomunitarias") + "' />" +
-	"<co_casillas303 casilla='[43]' descripcion='" + util.translate("scripts", "Exportaciones y operaciones asimilables") + "' />" +
-	"<co_casillas303 casilla='[44]' descripcion='" + util.translate("scripts", "Operaciones no sujetas o con inversión del sujeto pasivo que originan derecho a deducción") + "' />" +
-	"</Todos>";
-
-	xmlDoc = new FLDomDocument();
-	if (!xmlDoc.setContent(contenido)) {
-debug("!xmlDoc.setContent(contenido)");
-		return false;
-	}
-	var xmlOD:FLDomNodeList = xmlDoc.elementsByTagName("co_casillas303");
-	var eOD:FLDomElement;
-	var curCasillas:FLSqlCursor = new FLSqlCursor("co_casillas303");
-	for (var i:Number = 0; i < xmlOD.length(); i++) {
-		eOD = xmlOD.item(i).toElement();
-		curCasillas.setModeAccess(curCasillas.Insert);
-		curCasillas.refreshBuffer();
-		if (util.sqlSelect("co_casillas303", "casilla303", "casilla303 = '" + eOD.attribute("casilla") + "'")) {
-			continue;
-		}
-		curCasillas.setValueBuffer("casilla303", eOD.attribute("casilla"));
-		curCasillas.setValueBuffer("descripcion", eOD.attribute("descripcion"));
-		if (!curCasillas.commitBuffer()) {
-			return false;
-		}
-	}
-	return true;
-}
-
-//// MODELO 303 /////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-
-/** @class_definition modelo180 */
-/////////////////////////////////////////////////////////////////
-//// MODELO 180 /////////////////////////////////////////////////
-function modelo180_init()
-{
-	this.iface.__init();
-
-	var util:FLUtil = new FLUtil;
-
-	if (!util.sqlSelect("co_tipodec180", "idtipodec", "1 = 1")) {
-		this.iface.informarTiposDec180();
-	}
-}
-
-function modelo180_informarTiposDec180()
-{
-	var curTipoDec:FLSqlCursor = new FLSqlCursor("co_tipodec180");
-	var valores:Array = [["G", "Cuenta corriente tributaria-ingreso"], ["I", "Ingreso"], ["N", "Negativa"], ["U", "Domiciliación del ingreso en CCC"]];
-	
-	for (var i:Number = 0; i < valores.length; i++) {
-		with (curTipoDec) {
-			setModeAccess(Insert);
-			refreshBuffer();
-			setValueBuffer("idtipodec", valores[i][0]);
-			setValueBuffer("descripcion", valores[i][1]);
-			commitBuffer();
-		}
-	}
-}
-
-//// MODELO 180 /////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////
-
-/** @class_definition modelo115 */
-/////////////////////////////////////////////////////////////////
-//// MODELO 115 /////////////////////////////////////////////////
-function modelo115_init()
-{
-	this.iface.__init();
-
-	var util:FLUtil = new FLUtil;
-
-	if (!util.sqlSelect("co_tipodec115", "idtipodec", "1 = 1")) {
-		this.iface.informarTiposDec115();
-	}
-}
-
-function modelo115_informarTiposDec115()
-{
-	var curTipoDec:FLSqlCursor = new FLSqlCursor("co_tipodec115");
-	var valores:Array = [["G", "Cuenta corriente tributaria-ingreso"], ["I", "Ingreso"], ["N", "Negativa"], ["U", "Domiciliación del ingreso en CCC"]];
-	
-	for (var i:Number = 0; i < valores.length; i++) {
-		with (curTipoDec) {
-			setModeAccess(Insert);
-			refreshBuffer();
-			setValueBuffer("idtipodec", valores[i][0]);
-			setValueBuffer("descripcion", valores[i][1]);
-			commitBuffer();
-		}
-	}
-}
-
-//// MODELO 115 /////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
 
 /** @class_definition boe2011 */
