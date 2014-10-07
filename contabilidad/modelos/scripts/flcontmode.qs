@@ -179,8 +179,8 @@ class modelo340 extends modelo347 {
 /** @class_declaration modelo031 */
 /////////////////////////////////////////////////////////////////
 //// MODELO031 //////////////////////////////////////////////////
-class modelo031 extends modelo347 {
-    function modelo031( context ) { modelo347 ( context ); }
+class modelo031 extends modelo340 {
+    function modelo031( context ) { modelo340 ( context ); }
     function beforeCommit_co_modelo031(curModelo:FLsqlCursor):Boolean{
         return this.ctx.modelo031_beforeCommit_co_modelo031(curModelo);
     }
