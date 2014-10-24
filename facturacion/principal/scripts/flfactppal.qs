@@ -176,6 +176,10 @@ class oficial extends interna {
     function calcularIdentificadorAcreedor(cifEmpresa, codCuenta) {
         return this.ctx.oficial_calcularIdentificadorAcreedor(cifEmpresa, codCuenta);
     }
+    function extension(nE)
+    {
+    	return this.ctx.oficial_extension(nE);
+    }
 }
 //// OFICIAL /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -288,6 +292,10 @@ class ifaceCtx extends head {
     }
     function pub_moduloNumero(num, div) {
         return this.moduloNumero(num, div);
+    }
+    function pub_extension(nE)
+    {
+    	return this.extension(nE);
     }
 }
 
@@ -2210,6 +2218,13 @@ function oficial_globalInit()
 			flcolamens.iface.pub_globalInit();
 		} catch (e) {}
 	}
+}
+
+/** Indica si la extensión está cargada o no en el sistema. Función a sobrecargar por cada extensión devolviendo true en caso de que el nE coincida con el de la extensión.
+*/
+function oficial_extension(nE)
+{
+  return false;
 }
 
 function oficial_existeEnvioMail():Boolean

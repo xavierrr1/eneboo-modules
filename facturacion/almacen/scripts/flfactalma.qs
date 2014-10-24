@@ -625,11 +625,28 @@ function oficial_crearStock(codAlmacen:String, referencia:String):Number
 {
 	var util:FLUtil = new FLUtil;
 	var curStock:FLSqlCursor = new FLSqlCursor("stocks");
+
+	/* fusiodarts: Agregado para compatibilidad
+		La referencia puede venir como objeto o string
+	*/
+	var refArticulo:String;
+	try {
+
+		if (referencia.referencia){
+			refArticulo = referencia.referencia
+		}
+	} catch (e) {
+		// Si da error el try porque no es un objeto se almacena el string
+		refArticulo = referencia;
+	}
+	/* FIN fusiodarts */
+
 	with(curStock) {
 		setModeAccess(Insert);
 		refreshBuffer();
 		setValueBuffer("codalmacen", codAlmacen);
-		setValueBuffer("referencia", referencia);
+		//setValueBuffer("referencia", referencia);
+		setValueBuffer("referencia", refArticulo); /* fusiodarts: Agregado para compatibilidad */
 		setValueBuffer("nombre", util.sqlSelect("almacenes", "nombre", "codalmacen = '" + codAlmacen + "'"));
 		setValueBuffer("cantidad", 0);
 		if (!commitBuffer())
