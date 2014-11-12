@@ -89,6 +89,10 @@ class oficial extends interna {
 	function filtroTabla():String {
 		return this.ctx.oficial_filtroTabla();
 	}
+	function colorEstado(fN, fV, cursor, fT, sel)
+	{
+		return this.ctx.oficial_colorEstado(fN, fV, cursor, fT, sel);
+	}
 }
 //// OFICIAL /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -646,6 +650,38 @@ function oficial_filtroTabla():String
 		filtro = "codejercicio='" + codEjercicio + "'";
 	}
 	return filtro;
+}
+
+function oficial_colorEstado(fN, fV, cursor, fT, sel)
+{
+	debug("*************** INICIO - colorEstado *******************");
+	var _i = this.iface;
+	if (fN != "servido") {
+		return;
+	}
+	var color = "";
+	switch (fV) {
+		case "Sí": {
+			color = flfactppal.iface.pub_dameColor("fondo_verde");
+			break;
+		}
+		case "Parcial": {
+			color = flfactppal.iface.pub_dameColor("fondo_amarillo");
+			break;
+		}
+		case "No": {
+			color = flfactppal.iface.pub_dameColor("fondo_rojo");
+			break;
+		}
+		default: {
+			color = flfactppal.iface.pub_dameColor("fondo_blanco");
+		}
+	}
+	if (color != "") {
+		var a = [color, "#000000", "SolidPattern", "SolidPattern"];
+		return a;
+	}
+	debug("*************** FIN - colorEstado *******************");
 }
 //// OFICIAL /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////

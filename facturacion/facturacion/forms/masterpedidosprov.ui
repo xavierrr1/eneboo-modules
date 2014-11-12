@@ -486,6 +486,9 @@
             <property name="name">
                 <cstring>tableDBRecords</cstring>
             </property>
+            <property name="functionGetColor">
+                <string>formpedidosprov.colorEstado</string>
+            </property>
         </widget>
     </vbox>
 </widget>

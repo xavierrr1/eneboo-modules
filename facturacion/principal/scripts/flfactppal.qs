@@ -180,6 +180,10 @@ class oficial extends interna {
     {
     	return this.ctx.oficial_extension(nE);
     }
+    function dameColor(nombre)
+    {
+    	return this.ctx.oficial_dameColor(nombre);
+    }
 }
 //// OFICIAL /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -296,6 +300,10 @@ class ifaceCtx extends head {
     function pub_extension(nE)
     {
     	return this.extension(nE);
+    }
+    function pub_dameColor(nombre)
+    {
+    	return this.dameColor(nombre);
     }
 }
 
@@ -2230,6 +2238,29 @@ function oficial_extension(nE)
 function oficial_existeEnvioMail():Boolean
 {
 	return false;
+}
+
+function oficial_dameColor(nombre)
+{
+  var color;
+  switch (nombre) {
+    case "fondo_amarillo": {
+      color = "#FFF319";
+      break;
+    }
+    case "fondo_rojo": {
+      color = "#FF193F";
+      break;
+    }
+    case "fondo_verde": {
+      color = "#19FF34";
+      break;
+    }
+    default: {
+      color = "#FFFFFF";
+    }
+  }
+  return color;
 }
 
 /** \D si el país de la dirección indicada tiene activado el indicador de validación de sus provincias, se comprueba que la provincia y el país son válidos, informando si es necesario el campo idprovincia
