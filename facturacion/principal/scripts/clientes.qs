@@ -146,6 +146,10 @@ class oficial extends interna {
         function validarNifIva():Boolean {
                 return this.ctx.oficial_validarNifIva();
         }
+          function validarDuplicidadCif()
+  	{
+    		return this.ctx.oficial_validarDuplicidadCif();
+  	}
         function asociarContactoCliente() {
                 return this.ctx.oficial_asociarContactoCliente();
         }
@@ -346,7 +350,10 @@ function interna_validateForm():Boolean
         if (!this.iface.validarNifIva()) {
                 return false;
         }
-
+	
+	if (!this.iface.validarDuplicidadCif()) {
+    		return false;
+  	}
         return true;
 }
 
@@ -1072,6 +1079,28 @@ function oficial_validarNifIva():Boolean
                 }
         }
         return true;
+}
+
+function oficial_validarDuplicidadCif()
+{
+  var util = new FLUtil;
+  var cursor = this.cursor();
+
+  if (!flfactppal.iface.valorDefecto("cifunicos")) {
+    return true;
+  }
+  var codCliente = cursor.valueBuffer("codcliente");
+  var cifNif = cursor.valueBuffer("cifnif");
+  var tipoIdFiscal = cursor.valueBuffer("tipoidfiscal");
+  if (!tipoIdFiscal || tipoIdFiscal == "Otro") {
+    return true;
+  }
+  var codDuplicado = util.sqlSelect("clientes", "codcliente", "cifnif = '" + cifNif + "' AND tipoidfiscal = '" + tipoIdFiscal + "' AND codcliente <> '" + codCliente + "'");
+  if (codDuplicado) {
+    MessageBox.warning(util.translate("scripts", "Ya existe otro cliente (código %1) con identificador fiscal %2 de tipo %3").arg(codDuplicado).arg(cifNif).arg(tipoIdFiscal), MessageBox.Ok, MessageBox.NoButton);
+    return false;
+  }
+  return true;
 }
 //// OFICIAL /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////

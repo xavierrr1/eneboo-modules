@@ -164,6 +164,9 @@ class oficial extends interna {
 	}
   function  simplify(str)     { return this.ctx.oficial_simplify(str); }
   function  escapeQuote(str)  { return this.ctx.oficial_escapeQuote(str); }
+	function valorDefecto(fN: String): String {
+    		return this.ctx.oficial_valorDefecto(fN);
+  	}
     function calcularIBAN(cuenta, codPais) {
         return this.ctx.oficial_calcularIBAN(cuenta, codPais);
     }
@@ -280,6 +283,10 @@ class ifaceCtx extends head {
 	}
   function pub_simplify(str)     { return this.simplify(str); }
   function pub_escapeQuote(str)  { return this.escapeQuote(str); }
+      function pub_valorDefecto(fN)
+  {
+    return this.valorDefecto(fN);
+  }
     function pub_calcularIBAN(cuenta, codPais) {
         return this.calcularIBAN(cuenta, codPais);
     }
@@ -2273,6 +2280,16 @@ function oficial_escapeQuote(str)
   regExp.global = true;
   str = str.replace(regExp, "''");
   return str;
+}
+
+function oficial_valorDefecto(fN: String): String {
+  var util: FLUtil = new FLUtil;
+  var valor: String = util.sqlSelect("factppal_general", fN, "1 = 1");
+  if (!valor)
+  {
+    return "";
+  }
+  return valor;
 }
 
 function oficial_calcularIBAN(cuenta, codPais)

@@ -117,6 +117,9 @@ class oficial extends interna {
 	function validarNifIva():Boolean {
 		return this.ctx.oficial_validarNifIva();
 	}
+	function validarDuplicidadCif():Boolean {
+    		return this.ctx.oficial_validarDuplicidadCif();
+  	}
 	function cambiarCuentaDom() {
 		this.ctx.oficial_cambiarCuentaDom();
 	}
@@ -278,7 +281,9 @@ function interna_validateForm():Boolean
 	if (!this.iface.validarNifIva()) {
 		return false;
 	}
-
+	if (!this.iface.validarDuplicidadCif()) {
+    		return false;
+  	}
 	return true;
 }
 //// INTERNA /////////////////////////////////////////////////////
@@ -859,6 +864,28 @@ function oficial_borrarCuentaDom()
 	var cursor:FLSqlCursor = this.cursor();
 	cursor.setValueBuffer("codcuentadom", "");
 	this.child("leDescCuentaDom").text = "";
+}
+
+function oficial_validarDuplicidadCif()
+{
+  var util = new FLUtil;
+  var cursor = this.cursor();
+
+  if (!flfactppal.iface.valorDefecto("cifunicos")) {
+    return true;
+  }
+  var codProveedor = cursor.valueBuffer("codproveedor");
+  var cifNif = cursor.valueBuffer("cifnif");
+  var tipoIdFiscal = cursor.valueBuffer("tipoidfiscal");
+  if (!tipoIdFiscal || tipoIdFiscal == "Otro") {
+    return true;
+  }
+  var codDuplicado = util.sqlSelect("proveedores", "codproveedor", "cifnif = '" + cifNif + "' AND tipoidfiscal = '" + tipoIdFiscal + "' AND codproveedor <> '" + codProveedor + "'");
+  if (codDuplicado) {
+    MessageBox.warning(util.translate("scripts", "Ya existe otro proveedor (código %1) con identificador fiscal %2 de tipo %3").arg(codDuplicado).arg(cifNif).arg(tipoIdFiscal), MessageBox.Ok, MessageBox.NoButton);
+    return false;
+  }
+  return true;
 }
 
 //// OFICIAL /////////////////////////////////////////////////////

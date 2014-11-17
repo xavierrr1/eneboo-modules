@@ -423,4 +423,15 @@
 		<table>empresa</table>
 		<scriptform>wg_masterwidget</scriptform>
 	</action>	
+	
+	<action>
+		<name>factppal_general</name>
+		<alias>QT_TRANSLATE_NOOP("MetaData","Datos Generales")</alias>
+		<description>QT_TRANSLATE_NOOP("MetaData","Los datos generales son una serie de valores que se usan para personalizar el funcionamiento del módulo de principal de facturación")</description>
+		<scriptform>factppal_general</scriptform>
+		<scriptformrecord>factppal_general</scriptformrecord>
+		<table>factppal_general</table>
+		<form>factppal_general</form>
+		<formrecord>factppal_general</formrecord>
+	</action>
 </ACTIONS>
