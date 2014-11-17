@@ -385,10 +385,18 @@ debug(eFila.attribute("Numero") + " de " + numFilas);
 		anchoCol = Math.floor(anchoSobrante / numColsSinAncho);
 	}
 	var x:Number = xIniTabla;
-	for (iCol = 0; iCol < numCols; iCol++) {
+	for (iCol = 0; iCol < numCols; iCol++) {		
+		try {
 		if (aCols[iCol]["oculta"]) {
 			continue;
 		}
+		} catch (e) {
+		 aCols[iCol]["oculta"] = false;
+		 aCols[iCol]["ancho"] = -1
+		 
+		 	}
+		 	
+		 	
 		if (aCols[iCol]["ancho"] == -1) {
 			aCols[iCol]["ancho"] = anchoCol;
 		}
@@ -497,7 +505,11 @@ function oficial_dameEstiloCelda(eCelda:FLDomElement, aFilas:Array, aCols:Array,
 	if (estiloCelda != "") {
 		idEstilo = estiloCelda;
 	} else {
+		try {
 		estiloCol = aCols[iCol]["element"].attribute("Estilo");
+		} catch (e) {
+		estiloCol = "";
+		}
 		if (estiloCol != "") {
 			idEstilo = estiloCol;
 		} else {
