@@ -342,6 +342,10 @@ function oficial_guardarAtributoPropSel(idNivel:String, idProp:String, atributo:
 function oficial_dameArrayPropSel(idNivel:String):Array
 {
 	var aPropSel:Array;
+	
+	if (!idNivel)
+	    return aPropSel;
+	    
 	try {
 		aPropSel = this.iface.aPropNivelSel_[idNivel];
 	} catch(e) {
