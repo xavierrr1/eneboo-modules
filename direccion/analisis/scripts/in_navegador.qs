@@ -9166,10 +9166,10 @@ debug("KugarTemplate = " + contenidoKut);
 		this.iface.rptViewer_.reparent(this.child("frmInforme"));
 		nuevoViewer = true;
 	}
-	try {
-		var xmlKT:FLDomNode = this.iface.xmlReportTemplate_.namedItem("KugarTemplate");
-		this.iface.rptViewer_.setReportTemplate(xmlKT);
-	} catch(e) {
+//	try {
+//		var xmlKT:FLDomNode = this.iface.xmlReportTemplate_.namedItem("KugarTemplate");
+//		this.iface.rptViewer_.setReportTemplate(xmlKT);
+//	} catch(e) {
 		var nombreReport:String = "in_" + sys.nameUser();
 		var ficheroKut:String = nombreReport + ".kut";
 		var curFile:FLSqlCursor = new FLSqlCursor("flfiles");
@@ -9188,7 +9188,7 @@ debug("KugarTemplate = " + contenidoKut);
 			return false;
 		}
 		this.iface.rptViewer_.setReportTemplate(nombreReport);
-	}
+//	}
 	
 	this.iface.rptViewer_.setReportData(this.iface.xmlReportData_);
 	this.iface.rptViewer_.renderReport();
