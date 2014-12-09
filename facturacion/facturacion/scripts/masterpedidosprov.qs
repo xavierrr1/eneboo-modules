@@ -654,7 +654,7 @@ function oficial_filtroTabla():String
 
 function oficial_colorEstado(fN, fV, cursor, fT, sel)
 {
-	debug("*************** INICIO - colorEstado *******************");
+//	debug("*************** INICIO - colorEstado *******************");
 	var _i = this.iface;
 	if (fN != "servido") {
 		return;
@@ -681,7 +681,7 @@ function oficial_colorEstado(fN, fV, cursor, fT, sel)
 		var a = [color, "#000000", "SolidPattern", "SolidPattern"];
 		return a;
 	}
-	debug("*************** FIN - colorEstado *******************");
+//	debug("*************** FIN - colorEstado *******************");
 }
 //// OFICIAL /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
