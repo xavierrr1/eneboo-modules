@@ -179,6 +179,14 @@ class oficial extends interna {
     function calcularIdentificadorAcreedor(cifEmpresa, codCuenta) {
         return this.ctx.oficial_calcularIdentificadorAcreedor(cifEmpresa, codCuenta);
     }
+    function extension(nE)
+    {
+    	return this.ctx.oficial_extension(nE);
+    }
+    function dameColor(nombre)
+    {
+    	return this.ctx.oficial_dameColor(nombre);
+    }
 }
 //// OFICIAL /////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -295,6 +303,14 @@ class ifaceCtx extends head {
     }
     function pub_moduloNumero(num, div) {
         return this.moduloNumero(num, div);
+    }
+    function pub_extension(nE)
+    {
+    	return this.extension(nE);
+    }
+    function pub_dameColor(nombre)
+    {
+    	return this.dameColor(nombre);
     }
 }
 
@@ -2219,9 +2235,39 @@ function oficial_globalInit()
 	}
 }
 
+/** Indica si la extensión está cargada o no en el sistema. Función a sobrecargar por cada extensión devolviendo true en caso de que el nE coincida con el de la extensión.
+*/
+function oficial_extension(nE)
+{
+  return false;
+}
+
 function oficial_existeEnvioMail():Boolean
 {
 	return false;
+}
+
+function oficial_dameColor(nombre)
+{
+  var color;
+  switch (nombre) {
+    case "fondo_amarillo": {
+      color = "#FFF319";
+      break;
+    }
+    case "fondo_rojo": {
+      color = "#FF193F";
+      break;
+    }
+    case "fondo_verde": {
+      color = "#19FF34";
+      break;
+    }
+    default: {
+      color = "#FFFFFF";
+    }
+  }
+  return color;
 }
 
 /** \D si el país de la dirección indicada tiene activado el indicador de validación de sus provincias, se comprueba que la provincia y el país son válidos, informando si es necesario el campo idprovincia
