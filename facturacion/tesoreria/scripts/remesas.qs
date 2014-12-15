@@ -450,13 +450,8 @@ function oficial_excluirReciboRemesa(idRecibo:String, idRemesa:String):Boolean
 	idfactura = curRecibos.valueBuffer("idfactura");
 
 	curFactura.select("idfactura = " + idfactura);
-	if (curFactura.first()) {
-		try {
-			curFactura.setUnLock("editable", true);
-		} catch (e) {
-			curFactura.setValueBuffer("editable", true);
-		}    
-	}
+	if (curFactura.first())
+		curFactura.setUnLock("editable", true);
 	
 	curPagosDev.select("idrecibo = " + idRecibo + " ORDER BY fecha,idpagodevol");
 	if (curPagosDev.last()) {
