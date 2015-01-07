@@ -102,7 +102,7 @@ function interna_init()
 	var util:FLUtil = new FLUtil;
 	var cursor:FLSqlCursor = this.cursor();
 
-	connect(this.child("pbnSelecDestinatario"), "clicked()", this, "iface.selecDestinatarioClicked");
+//	connect(this.child("pbnSelecDestinatario"), "clicked()", this, "iface.selecDestinatarioClicked");
 	connect(this.child("pbnInsertarPlantilla"), "clicked()", this, "iface.insertarPlantilla()" );
 	connect(this.child("pbnEnviarMail"), "clicked()", this, "iface.enviarMail()" );
 
