@@ -38,4 +38,4 @@ flforma.en.ts flforma.de.ts flforma.ca.ts flforma.gl.ts \
 flforma.pt.ts flforma.it.ts flforma.untranslated.ts" >> ./translations.pro
 
 lupdate -noobsolete -verbose ./translations.pro
-#rm -fR ./translations.pro
+rm -fR ./translations.pro
