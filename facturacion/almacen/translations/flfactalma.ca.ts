@@ -2,7 +2,7 @@
 <context encoding="UTF-8">
     <name>FLWidgetApplication</name>
     <message encoding="UTF-8">
-        <source>FacturaLUX - Almac�n</source>
+        <source>FacturaLUX - Almacén</source>
         <translation>FacturaLUX - Magatzem</translation>
     </message>
     <message>
@@ -10,7 +10,7 @@
         <translation>FacturaLUX programari ERP</translation>
     </message>
     <message encoding="UTF-8">
-        <source>&amp;Almac�n</source>
+        <source>&amp;Almacén</source>
         <translation>&amp;Magatzem</translation>
     </message>
     <message>
@@ -169,7 +169,7 @@
     <name>MetaData</name>
     <message>
         <source>Art&#xed;culos de proveedores</source>
-        <translation>Articles de prove�dors</translation>
+        <translation>Articles de proveïdors</translation>
     </message>
     <message>
         <source>Identificador</source>
@@ -181,11 +181,11 @@
     </message>
     <message>
         <source>Proveedor</source>
-        <translation>Prove�dor</translation>
+        <translation>Proveïdor</translation>
     </message>
     <message>
         <source>Nombre proveedor</source>
-        <translation>Nom prove�dor</translation>
+        <translation>Nom proveïdor</translation>
     </message>
     <message>
         <source>Coste</source>
@@ -197,7 +197,7 @@
     </message>
     <message>
         <source>Ref. proveedor</source>
-        <translation>Ref. prove�dor</translation>
+        <translation>Ref. proveïdor</translation>
     </message>
     <message>
         <source>Art&#xed;culos de Clientes</source>
@@ -285,7 +285,7 @@
     </message>
     <message>
         <source>Stock m&#xe1;ximo</source>
-        <translation>Estoc m�xim</translation>
+        <translation>Estoc màxim</translation>
     </message>
     <message>
         <source>Stock m&#xed;nimo</source>
@@ -321,7 +321,7 @@
     </message>
     <message>
         <source>Direcci&#xf3;n</source>
-        <translation>Adre�a</translation>
+        <translation>Adreça</translation>
     </message>
     <message>
         <source>C&#xf3;digo postal</source>
@@ -472,7 +472,7 @@
     </message>
     <message>
         <source>referencia</source>
-        <translation>refer�ncia</translation>
+        <translation>referéncia</translation>
     </message>
     <message>
         <source>descripcion</source>
@@ -554,7 +554,7 @@
         <translation>E&amp;stocs</translation>
     </message>
     <message encoding="UTF-8">
-        <source>S&amp;tocks por almacén</source>
+        <source>S&amp;tocks por almacÃ©n</source>
         <translation>Es&amp;tocs per magatzem</translation>
     </message>
     <message>
@@ -627,7 +627,7 @@
     </message>
     <message>
         <source>&amp;Precios por Proveedor</source>
-        <translation>&amp;Preus per Prove�dors</translation>
+        <translation>&amp;Preus per Proveïdors</translation>
     </message>
     <message>
         <source>articulosprov</source>
@@ -741,7 +741,7 @@
     <name>formArticulosProv</name>
     <message>
         <source>Articulos por Proveedor</source>
-        <translation>Articles per proveïdor</translation>
+        <translation>Articles per proveÃ¯dor</translation>
     </message>
     <message encoding="UTF-8">
         <source>Art&#xed;culo</source>
@@ -749,15 +749,15 @@
     </message>
     <message>
         <source>Precio por proveedor</source>
-        <translation>Preu per Proveïdor</translation>
+        <translation>Preu per ProveÃ¯dor</translation>
     </message>
     <message>
         <source>Articulos por Agente</source>
         <translation>Articles per Agent</translation>
     </message>
     <message encoding="UTF-8">
-        <source>Comisión por agente</source>
-        <translation>Comissió per agent</translation>
+        <source>ComisiÃ³n por agente</source>
+        <translation>ComissiÃ³ per agent</translation>
     </message>
     <message>
         <source>referencia</source>
@@ -942,7 +942,7 @@
     </message>
     <message encoding="UTF-8">
         <source>&amp;Direcci&#xf3;n</source>
-        <translation>&amp;Adre�a</translation>
+        <translation>&amp;Adreça</translation>
     </message>
     <message>
         <source>&amp;Contacto</source>
@@ -1044,11 +1044,11 @@
         <translation>Quantitat final</translation>
     </message>
     <message encoding="UTF-8">
-        <source>Almac�n origen</source>
+        <source>Almacén origen</source>
         <translation>Magatzem origen</translation>
     </message>
     <message encoding="UTF-8">
-        <source>Almac�n destino</source>
+        <source>Almacén destino</source>
         <translation>Magatzem destinaci&#xf3;</translation>
     </message>
 </context>
@@ -1099,15 +1099,15 @@
     <name>scripts</name>
     <message>
         <source>Se insertar&#xe1; un almac&#xe9;n por defecto para empezar a trabajar.</source>
-        <translation>S&apos;inserirà un magatzem per defecte per a comen�ar a treballar.</translation>
+        <translation>S&apos;inserirÃ  un magatzem per defecte per a començar a treballar.</translation>
     </message>
     <message>
         <source>La cantidad debe ser mayor que cero</source>
-        <translation>La quantitat ha de ser m�s gran que zero</translation>
+        <translation>La quantitat ha de ser més gran que zero</translation>
     </message>
     <message>
         <source>Las cantidad nueva es igual a la inicial</source>
-        <translation>La quantitat nova �s igual que la inicial</translation>
+        <translation>La quantitat nova és igual que la inicial</translation>
     </message>
     <message>
         <source>La cantidad a transferir no puede ser cero</source>
@@ -1140,8 +1140,8 @@
     <message>
         <source>Va a eliminar un registro de stock con cantidad distinta de 0.
 &#xbf;Est&#xe1; seguro?</source>
-        <translation>Eliminar�un registre d&apos;estoc amb quantitat diferent de 0.
-Est�segur?</translation>
+        <translation>Eliminarà un registre d&apos;estoc amb quantitat diferent de 0.
+Està segur?</translation>
     </message>
     <message>
         <source>Almac&#xe9;n origen (%1)</source>
@@ -1149,7 +1149,7 @@ Est�segur?</translation>
     </message>
     <message>
         <source>Almac&#xe9;n destino (%1)</source>
-        <translation>Magatzem destí (%1)</translation>
+        <translation>Magatzem destÃ­ (%1)</translation>
     </message>
     <message>
         <source>No hay stock suficiente para el art&#xed;culo %1 en el almac&#xe9;n %2</source>
@@ -1164,7 +1164,7 @@ Est�segur?</translation>
 Esto sobreescribir&#xe1; cualquier precio que haya sido modificado manualmente.
 &#xbf;Desea continuar?</source>
         <translation>S&apos;actualitzaran els preus dels articles per a la tarifa% 1. (new line)
-Aix� sobreescriur�qualsevol preu que hagi estat modificat manualment. (New line)
+Això sobreescriurà qualsevol preu que hagi estat modificat manualment. (New line)
 Voleu continuar?</translation>
     </message>
     <message>
@@ -1231,7 +1231,7 @@ Voleu continuar?</translation>
     </message>
     <message>
         <source>codalmadestino</source>
-        <translation>codmagdestí</translation>
+        <translation>codmagdestÃ­</translation>
     </message>
     <message encoding="UTF-8">
         <source>&amp;L&#xed;neas</source>
