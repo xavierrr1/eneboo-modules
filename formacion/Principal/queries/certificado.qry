@@ -6,7 +6,7 @@
 
  <param>
   <name>idF</name>
-  <alias>QT_TRANSLATE_NOOP("Queries","Formación:")</alias>
+  <alias>QT_TRANSLATE_NOOP("Queries","FormaciÃ³n:")</alias>
   <type>serial</type>
  </param>
 
