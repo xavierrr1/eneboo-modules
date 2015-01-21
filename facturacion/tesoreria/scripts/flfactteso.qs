@@ -888,19 +888,10 @@ function oficial_calcularEstadoFacturaCli(idRecibo:String, idFactura:String):Boo
         var curFactura:FLSqlCursor = new FLSqlCursor("facturascli");
         curFactura.select("idfactura = " + idFactura);
         curFactura.first();
-        if (qryPagos.size() == 0) {
-		try {
-		  curFactura.setUnLock("editable", true);
-		} catch (e) {
-		  curFactura.setValueBuffer("editable", true);
-		}    
-	} else {
-		try {
-		  curFactura.setUnLock("editable", false);
-		} catch (e) {
-		  curFactura.setValueBuffer("editable", false);
-		}  
-	}
+        if (qryPagos.size() == 0)
+                curFactura.setUnLock("editable", true);
+        else
+                curFactura.setUnLock("editable", false);
         return true;
 }
 
