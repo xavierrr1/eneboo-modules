@@ -206,7 +206,7 @@ function interna_init()
 			}
 		}
 	}
-
+/**
 	///////////// BORRAR 25/09/08 ///////////////////////////////
 	// Es para inicializar los dos campos nuevos Se compra y Se vende a true.
 	var util:FLUtil;
@@ -219,6 +219,7 @@ function interna_init()
 			MessageBox.Ok, MessageBox.NoButton, MessageBox.NoButton);
 	}
 	///////////// BORRAR 25/09/08 ///////////////////////////////
+**/
 }
 
 /** \D
