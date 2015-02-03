@@ -251,11 +251,7 @@ function oficial_eliminarFactura(idFactura:Number):Boolean
                 curRecibos.setValueBuffer("estado","Emitido");
                 if(!curRecibos.commitBuffer())
                         return false;
-		try {
-			curFactura.setUnLock("editable", true);
-		} catch (e) {
-			curFactura.setValueBuffer("editable", true);
-		}  
+                curFactura.setUnLock("editable",true);
         }
         curFactura.setModeAccess(curFactura.Del);
         curFactura.refreshBuffer();

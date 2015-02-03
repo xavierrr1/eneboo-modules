@@ -3906,11 +3906,7 @@ function oficial_actualizarEstadoPedidoProv(idPedido:Number, curAlbaran:FLSqlCur
 		if (estado == curPedido.valueBuffer("servido")) {
 			return true;
 		}
-		try {
-			curPedido.setUnLock("editable", true);
-		} catch (e) {
-			curPedido.setValueBuffer("editable", true);
-		}  
+		curPedido.setUnLock("editable", true);
 	}
 
 	curPedido.select("idpedido = " + idPedido);
@@ -4062,12 +4058,7 @@ function oficial_actualizarEstadoPedidoCli(idPedido:Number, curAlbaran:FLSqlCurs
 		if (estado == curPedido.valueBuffer("servido")) {
 			return true;
 		}
-		
-		try {
-			curPedido.setUnLock("editable", true);
-		} catch (e) {
-			curPedido.setValueBuffer("editable", true);
-		} 
+		curPedido.setUnLock("editable", true);
 	}
 
 	curPedido.select("idpedido = " + idPedido);
@@ -4227,12 +4218,7 @@ function oficial_liberarPresupuestoCli(idPresupuesto:Number):Boolean
 			return false;
 		}
 		with(curPresupuesto) {
-			try {
-			  setUnLock("editable", true);
-			} catch (e) {
-			  setValueBuffer("editable", true);
-			}
-			
+			setUnLock("editable", true);
 		}
 	}
 	return true;
