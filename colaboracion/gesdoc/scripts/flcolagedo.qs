@@ -53,6 +53,8 @@ class oficial extends interna {
 	var tipoObjetoRaiz_:String;
 	var curDocumento_:FLSqlCursor;
 	var comandoCP_:String;
+	var comandoRM_:String;
+	var comandoRMParam_:String;
 	function oficial( context ) { interna( context ); }
 	function valoresIniciales() {
 		return this.ctx.oficial_valoresIniciales();
@@ -826,7 +828,9 @@ function oficial_borrarDocRepo(codigo:String):Boolean
 		return this.iface.dirBorrarDocRepo(codigo);
 
 	var util:FLUtil = new FLUtil;
-	var urlRepo:String = util.sqlSelect("gd_config", "urlrepositorio", "1 = 1");
+
+	//var urlRepo:String = util.sqlSelect("gd_config", "urlrepositorio", "1 = 1");
+	var urlRepo:String = util.readSettingEntry("scripts/flcolagedo/urlrepositorio");
 	if (!urlRepo)
 		return false;
 
@@ -885,14 +889,17 @@ function oficial_borrarDocRepo(codigo:String):Boolean
 function oficial_dirBorrarDocRepo(codigo:String):Boolean
 {
 	//var comando:String = "rm -rf " + this.iface.pathLocal + codigo;
-	var comando:String = ["rm", "-rf", this.iface.pathLocal + codigo];
-	var resComando:Array = this.iface.ejecutarComando(comando);
+	//var comando:String = ["rm", "-rf", this.iface.pathLocal + codigo];
+	var comando:String = [this.iface.comandoRM_, this.iface.comandoRMParam_, this.iface.pathLocal + codigo];
+debug("comando borrar -> "+comando);
+var resComando:Array = this.iface.ejecutarComando(comando);
 	if (resComando.ok == false) {
 		MessageBox.warning(util.translate("scripts", "Error al borrar el documento %1:\n%2").arg(codigo).arg(resComando.salida), MessageBox.Ok, MessageBox.NoButton);
 		return false;
 	}
 	//comando = "rm -rf  " + this.iface.urlRepositorio_ + codigo;
-	comando = ["rm", "-rf", this.iface.urlRepositorio_ + codigo];
+	//comando = ["rm", "-rf", this.iface.urlRepositorio_ + codigo];
+	comando = [this.iface.comandoRM_, this.iface.comandoRMParam_, this.iface.urlRepositorio_ + codigo];
 	resComando = this.iface.ejecutarComando(comando);
 	if (resComando.ok == false) {
 		MessageBox.warning(util.translate("scripts", "Error al borrar el documento %1 en el repositorio:\n%2").arg(codigo).arg(resComando.salida), MessageBox.Ok, MessageBox.NoButton);
@@ -1084,7 +1091,8 @@ function oficial_distSubirDocumento(curDocumento:FLSqlCursor, comentario:String)
 		return false;
 	}
 	var fichero:String = curDocumento.valueBuffer("fichero");
-	var rutaRepositorio:String = curDocumento.valueBuffer("rutarepositorio");
+	//var rutaRepositorio:String = curDocumento.valueBuffer("rutarepositorio");
+	var rutaRepositorio:String = util.readSettingEntry("scripts/flcolagedo/urlrepositorio");
 	var estado:String = this.iface.distStatus(fichero, rutaRepositorio);
 
 	switch (estado) {
@@ -1834,13 +1842,15 @@ function oficial_quitarDoc_clickedGD()
 function oficial_verificarConfiguracion():Boolean
 {
 	var util:FLUtil = new FLUtil;
-	this.iface.tipoRepositorio_ = util.sqlSelect("gd_config", "tiporepositorio", "1 = 1");
+	//this.iface.tipoRepositorio_ = util.sqlSelect("gd_config", "tiporepositorio", "1 = 1");
+	this.iface.tipoRepositorio_ = util.readSettingEntry("scripts/flcolagedo/tiporepositorio");
 	if (!this.iface.tipoRepositorio_) {
 		MessageBox.warning(util.translate("scripts", "No tiene establecido el tipo de repositorio.\nPara usar este módulo es necesario establecer este dato en el formulario de configuración"), MessageBox.Ok, MessageBox.NoButton);
 		return false;
 	}
 
-	this.iface.urlRepositorio_ = util.sqlSelect("gd_config", "urlrepositorio", "1 = 1");
+	//this.iface.urlRepositorio_ = util.sqlSelect("gd_config", "urlrepositorio", "1 = 1");
+	this.iface.urlRepositorio_ = util.readSettingEntry("scripts/flcolagedo/urlrepositorio");
 	if (!this.iface.urlRepositorio_) {
 		MessageBox.warning(util.translate("scripts", "No tiene establecida la URL del repositorio.\nPara usar este módulo es necesario establecer este dato en el formulario de configuración"), MessageBox.Ok, MessageBox.NoButton);
 		return false;
@@ -1860,6 +1870,20 @@ function oficial_verificarConfiguracion():Boolean
 debug("leyendo cp " + this.iface.comandoCP_);
 	if (!this.iface.comandoCP_) {
 		this.iface.comandoCP_ = "cp";
+	}
+
+	var com:String;
+	var com_array=new Array(2);
+	com = util.readSettingEntry("scripts/flcolagedo/comandorm");
+	com_array = com.split(" ");
+	this.iface.comandoRM_ = com_array[0];
+	if (com_array.length>1) this.iface.comandoRMParam_ = com_array[1];
+	if (!this.iface.comandoRM_) {
+		this.iface.comandoRM_ = "rm";
+		this.iface.comandoRMParam_ = "-rf";
+	}
+	else if (!this.iface.comandoRMParam_) {
+		this.iface.comandoRMParam_ = "";
 	}
 	return true;
 }
@@ -2170,3 +2194,4 @@ function oficial_adaptarRuta(ruta:String):String
 
 //// DESARROLLO /////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////
+

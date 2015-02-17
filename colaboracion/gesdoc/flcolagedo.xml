@@ -62,8 +62,8 @@
 				</li>
 			</ul>")
 		</description>
-		<table>gd_config</table>
 		<form>gd_config</form>
+		<table>gd_config</table>
 		<scriptform>gd_config</scriptform>
 	</action>
 	

@@ -206,7 +206,8 @@ function interna_init()
 	switch (cursor.modeAccess()) {
 		case cursor.Insert: {
 			this.child("fdbCreadoPor").setValue(sys.nameUser());
-			this.child("fdbRutaRepositorio").setValue(this.iface.rutaRepo());
+			//this.child("fdbRutaRepositorio").setValue(this.iface.rutaRepo());
+			this.child("lineEditRutaRepositorio").text=util.readSettingEntry("scripts/flcolagedo/urlrepositorio");
 			break;
 		}
 		case cursor.Edit: {
@@ -226,8 +227,9 @@ function interna_init()
 			break;
 		}
 		default: {
-			this.child("fdbRutaRepositorio").setDisabled(true);
+			//this.child("fdbRutaRepositorio").setDisabled(true);
 			this.child("pbnRutaRepositorio").enabled = false;
+			this.child("lineEditRutaRepositorio").text=util.readSettingEntry("scripts/flcolagedo/urlrepositorio");
 			break;
 		}
 	}
@@ -556,13 +558,15 @@ function oficial_bajar():Boolean
 
 	switch (tipoRepo) {
 		case "Distribuido": {
-			if (!flcolagedo.iface.pub_obtenerDocumento(cursor.valueBuffer("fichero"), pathFichero + "/" + cursor.valueBuffer("fichero"), false, false, cursor.valueBuffer("rutarepositorio"))) {
+			var rutarepo:String=util.readSettingEntry("scripts/flcolagedo/urlrepositorio");
+			if (!flcolagedo.iface.pub_obtenerDocumento(cursor.valueBuffer("fichero"), pathFichero + "/" + cursor.valueBuffer("fichero"), false, false, rutarepo)) {
 				return false;
 			}
 			break;
 		}
 		default: {
-			if (!flcolagedo.iface.pub_obtenerDocumento(codDocumento, pathFichero + "/" + cursor.valueBuffer("fichero"), false, false, cursor.valueBuffer("rutarepositorio"))) {
+			var rutarepo:String=util.readSettingEntry("scripts/flcolagedo/urlrepositorio");
+			if (!flcolagedo.iface.pub_obtenerDocumento(codDocumento, pathFichero + "/" + cursor.valueBuffer("fichero"), false, false, rutarepo)) {
 				return false;
 			}
 			break;
@@ -728,7 +732,8 @@ function oficial_cambiarRutaRepositorio():Boolean
 {
 	var util:FLUtil = new FLUtil();
 	var cursor:FLSqlCursor = this.cursor();
-	var pathFichero:String = cursor.valueBuffer("rutarepositorio");
+	//var pathFichero:String = cursor.valueBuffer("rutarepositorio");
+	var pathFichero:String = util.readSettingEntry("scripts/flcolagedo/urlrepositorio");
 	if (!File.isDir(pathFichero)) {
 		pathFichero = FileDialog.getExistingDirectory(Dir.home, util.translate("scripts", "Seleccione directorio"));
 	} else {
@@ -738,7 +743,9 @@ function oficial_cambiarRutaRepositorio():Boolean
 		return false;
 	}
 
-	this.child("fdbRutaRepositorio").setValue(pathFichero);
+	//this.child("fdbRutaRepositorio").setValue(pathFichero);
+	this.child("lineEditRutaRepositorio").text=pathFichero;
+	util.writeSettingEntry("scripts/flcolagedo/tiporepositorio", pathFichero);
 	return true;
 }
 
@@ -866,7 +873,8 @@ function oficial_rutaDoc():String
 function oficial_rutaRepo():String
 {
 	var util:FLUtil = new FLUtil;
-	return util.sqlSelect("gd_config", "urlrepositorio", "1 = 1");
+	//return util.sqlSelect("gd_config", "urlrepositorio", "1 = 1");
+	return util.readSettingEntry("scripts/flcolagedo/urlrepositorio");
 }
 
 function oficial_obtenerPlantilla(idPlantilla:String, cursor:FLSqlCursor):Boolean

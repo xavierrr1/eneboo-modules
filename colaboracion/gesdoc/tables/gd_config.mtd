@@ -29,7 +29,7 @@
 		<name>urlrepositorio</name>
 		<!--URL del repositorio-->
 		<alias>QT_TRANSLATE_NOOP("MetaData","U.R.L. Repositorio")</alias>
-		<null>false</null>
+		<null>true</null>
 		<pk>false</pk>
 		<type>string</type>
 		<length>150</length>

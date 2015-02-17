@@ -125,12 +125,4 @@
         <type>string</type>
         <length>10</length>
     </field>
-    <field>
-        <name>rutarepositorio</name>
-<!--Ruta en repositorio-->        <alias>QT_TRANSLATE_NOOP("MetaData","Ruta en repositorio")</alias>
-        <null>true</null>
-        <pk>false</pk>
-        <type>string</type>
-        <length>200</length>
-    </field>
 </TMD>
